@@ -26,6 +26,7 @@
   nil)
 
 (defun make-black ((obj rb-tree))
+  "swaps color to black"
   (make-instance 'rb-tree
                  :color 'black
                  :value (value obj)

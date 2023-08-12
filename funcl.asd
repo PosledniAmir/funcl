@@ -11,3 +11,10 @@
                (:file "defunclass-tests")
                (:file "lazy-queue-tests"))
   :perform (test-op (o c) (symbol-call :fiveam `#:run! (find-symbol "FUNCL-SUITE" "LAZY-THUNK-TESTS"))))
+
+                                        ; issues:
+                                        ; fix defgeneric (you never declared generic yet using defmethod
+                                        ; tests for rb-tree
+                                        ; documentation for rb-tree
+                                        ; fix documentation
+
