@@ -16,6 +16,7 @@
   (:documentation "okasaki's lazy queue"))
 
 (defun rot (left right acc)
+  "auxilliary function for L ++ rev R"
   (cond
     ((nil? left) (lazy (cons (head right) acc)))
     (t (lazy (cons (head left)
@@ -24,6 +25,7 @@
                         (lazy (cons (head right) acc))))))))
 
 (defmethod make-queue ((obj lazy-queue))
+  "auxilliary function for updating queue in each step"
   (if (not (nil? (left obj)))
       (tail (left obj)))
   (cond
@@ -35,6 +37,7 @@
                       :right-size 0))))
 
 (defmethod concat (elem (obj lazy-queue))
+  "adds elem to the end of the queue"
   (make-queue (make-instance 'lazy-queue
                              :left (left obj)
                              :right (concat elem (right obj))
@@ -42,6 +45,7 @@
                              :right-size (+ 1 (right-size obj)))))
 
 (defmethod tail ((obj lazy-queue))
+  "returns queue without the first elem"
   (make-queue (make-instance 'lazy-queue
                              :left (tail (left obj))
                              :right (right obj)
@@ -49,9 +53,11 @@
                              :right-size (right-size obj))))
 
 (defmethod head ((obj lazy-queue))
+  "returns first elem in the queue"
   (head (left obj)))
 
 (defmethod nil? ((obj lazy-queue))
+  "empty check"
   (and
    (<= (left-size obj) 0)
    (<= (right-size obj) 0)))
