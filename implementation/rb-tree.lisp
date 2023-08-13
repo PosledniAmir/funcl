@@ -19,7 +19,7 @@
 (defmethod nil? ((obj rb-tree))
   nil)
 
-(defun make-black ((obj rb-tree))
+(defun make-black (obj)
   "swaps color to black"
   (make-instance 'rb-tree
                  :color 'black
@@ -115,7 +115,7 @@
   (let* ((v (value obj))
          (l (left obj))
          (r (right obj))
-         (c (compare elem c))
+         (c (compare elem v))
          (col (color obj)))
     (cond
       ((= 0 c) obj)
@@ -137,3 +137,63 @@
 
 (defmethod concat (elem (obj rb-tree-empty))
   (make-black (insert elem obj)))
+
+(defgeneric take-out-aux (obj)
+  (:documentation "Aux method for taking out"))
+
+(defmethod take-out (elem (obj rb-tree-empty))
+  obj)
+
+(defmethod take-out-aux ((obj rb-tree-empty))
+  obj)
+
+(defmethod take-out-aux ((obj rb-tree))
+  (let* ((l (left obj))
+         (r (right obj))
+         (c (color obj)))
+    (cond
+      ((not (nil? l)) (make-instance 'rb-tree
+                                     :color c
+                                     :value (value l)
+                                     :left (take-out-aux l)
+                                     :right r))
+      ((not (nil? r)) (make-instance 'rb-tree
+                                     :color c
+                                     :value (value r)
+                                     :left l
+                                     :right (take-out-aux r)))
+      (t (make-instance 'rb-tree-empty)))))
+
+(defmethod take-out (elem (obj rb-tree))
+  (let* ((v (value obj))
+         (l (left obj))
+         (r (right obj))
+         (c (compare elem v))
+         (col (color obj)))
+    (cond
+      ((= 0 c) (balance (take-out-aux obj)))
+      ((< 0 c) (balance
+                (make-instance 'rb-tree
+                               :color col
+                               :value v
+                               :left (take-out elem l)
+                               :right r)))
+      ((> 0 c) (balance
+                (make-instance 'rb-tree
+                               :color col
+                               :value v
+                               :left l
+                               :right (take-out elem r)))))))
+
+(defun rb-tree (&rest rest)
+  "constructor for a red black tree"
+  (reduce (lambda (x y) (concat y x))
+          rest
+          :initial-value (make-instance 'rb-tree-empty)))
+
+(defmethod head ((obj rb-tree))
+  (value obj))
+
+(defmethod tail ((obj rb-tree))
+  (let ((v (value obj)))
+    (take-out v obj)))
