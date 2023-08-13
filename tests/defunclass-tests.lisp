@@ -1,5 +1,5 @@
 (defpackage :defunclass-tests
-  (:use :cl :fiveam :funcl-suite :defunclass))
+  (:use :cl :fiveam :funcl-suite :defunclass :generics))
 
 (in-package :defunclass-tests)
 

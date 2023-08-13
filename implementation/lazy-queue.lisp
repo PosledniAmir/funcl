@@ -1,10 +1,6 @@
 (defpackage :lazy-queue
   (:use :cl :generics :lazy-thunk :defunclass)
-  (:export :lazy-queue
-           :head
-           :tail
-           :concat
-           :nil?))
+  (:export :lazy-queue))
 
 (in-package :lazy-queue)
 

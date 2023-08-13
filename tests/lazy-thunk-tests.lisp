@@ -1,5 +1,5 @@
 (defpackage :lazy-thunk-tests
-  (:use :cl :fiveam :funcl-suite :lazy-thunk))
+  (:use :cl :fiveam :funcl-suite :lazy-thunk :generics))
 
 (in-package :lazy-thunk-tests)
 

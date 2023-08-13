@@ -1,11 +1,6 @@
 (defpackage :lazy-thunk
-  (:use :cl :bordeaux-threads)
+  (:use :cl :bordeaux-threads :generics)
   (:export :lazy
-           :force
-           :nil?
-           :concat
-           :head
-           :tail
            :lazy-stream))
 
 (in-package :lazy-thunk)

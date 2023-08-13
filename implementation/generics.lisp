@@ -1,5 +1,14 @@
 (defpackage :generics
-  (:use :cl))
+  (:use :cl)
+  (:export :realized?
+           :force
+           :head
+           :tail
+           :concat
+           :nil?
+           :look-for
+           :take-out
+           :compare))
 
 (in-package :generics)
 
@@ -20,3 +29,12 @@
 
 (defgeneric nil? (object)
   (:documentation "Checks whether the collection is empty"))
+
+(defgeneric look-for (element object)
+  (:documentation "Checks whether the collection contains element"))
+
+(defgeneric take-out (element object)
+  (:documentation "Removes the element from the collection"))
+
+(defgeneric compare (first second)
+  (:documentation "Compares the first element to the second"))

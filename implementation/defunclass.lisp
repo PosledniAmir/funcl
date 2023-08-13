@@ -1,5 +1,5 @@
 (defpackage :defunclass
-  (:use :cl)
+  (:use :cl :generics)
   (:export :defunclass))
 
 (in-package :defunclass)

@@ -1,5 +1,5 @@
 (defpackage :lazy-queue-tests
-  (:use :cl :fiveam :lazy-queue :funcl-suite))
+  (:use :cl :fiveam :lazy-queue :funcl-suite :generics))
 
 (in-package :lazy-queue-tests)
 

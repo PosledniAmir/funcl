@@ -1,12 +1,6 @@
 (defpackage :rb-tree
-  (:use :cl :defunclass)
-  (:export :rb-tree
-           :head
-           :tail
-           :concat
-           :nil?
-           :look-for
-           :remove))
+  (:use :cl :defunclass :generics)
+  (:export :rb-tree))
 
 (in-package :rb-tree)
 
@@ -108,6 +102,9 @@
   (cond
     ((equal 'red (color obj)) obj)
     (t (balance-black obj))))
+
+(defgeneric insert (elem obj)
+  (:documentation "help method for rb-tree to insert an element"))
 
 (defmethod insert (elem (obj rb-tree-empty))
   (make-instance 'rb-tree
