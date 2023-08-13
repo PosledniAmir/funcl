@@ -1,11 +1,7 @@
 (defpackage :lazy-thunk-tests
-  (:use :cl :fiveam :lazy-thunk)
-  (:export :funcl-suite))
+  (:use :cl :fiveam :funcl-suite :lazy-thunk))
 
 (in-package :lazy-thunk-tests)
-
-(def-suite funcl-suite
-  :description "Main test suite for funcl library")
 
 (def-suite* lazy-thunk-suite :in funcl-suite)
 

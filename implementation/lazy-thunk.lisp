@@ -23,7 +23,6 @@
   (:documentation "A class representing lazy evaluation"))
 
 (defmethod realized? ((obj thunk))
-  "checks whether the thunk is realized"
   (slot-boundp obj 'value))
 
 (defmethod print-object ((obj thunk) stream)
@@ -47,25 +46,20 @@
            (values-list result))))))
 
 (defmethod force ((obj thunk))
-  "Forces thunk to evaluate and returns the result"
   (cond
     ((realized? obj) (values-list (value obj)))
     (t (force-aux obj))))
 
 (defmethod nil? ((obj thunk))
-  "Checks whether the thunk is nil or not"
   (null (force obj)))
 
 (defmethod concat (item (obj thunk))
-  "Concatenates item with lazy thunk - for lazy-streams"
   (lazy (cons item obj)))
 
 (defmethod head ((obj thunk))
-  "car for lazy streams"
   (car (force obj)))
 
 (defmethod tail ((obj thunk))
-  "cdr for lazy stream"
   (cdr (force obj)))
 
 (defmacro lazy-stream (&body body)

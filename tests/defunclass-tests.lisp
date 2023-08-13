@@ -1,5 +1,5 @@
 (defpackage :defunclass-tests
-  (:use :cl :fiveam :lazy-thunk-tests :defunclass))
+  (:use :cl :fiveam :funcl-suite :defunclass))
 
 (in-package :defunclass-tests)
 
