@@ -3,7 +3,7 @@
 
 (in-package :rb-tree-tests)
 
-(def-suite* rb-treesuite :in funcl-suite)
+(def-suite* rb-tree-suite :in funcl-suite)
 
 (defmethod compare ((a integer) (b integer))
   (cond
