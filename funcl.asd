@@ -1,5 +1,6 @@
 (defsystem "funcl"
-  :depends-on ("bordeaux-threads")
+  :depends-on ("bordeaux-threads"
+               "trivia")
   :components ((:file "implementation/generics")
                (:file "implementation/lazy-thunk")
                (:file "implementation/defunclass")

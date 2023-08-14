@@ -1,5 +1,5 @@
 (defpackage :rb-tree
-  (:use :cl :defunclass :generics)
+  (:use :cl :defunclass :generics :trivia)
   (:export :rb-tree))
 
 (in-package :rb-tree)
@@ -36,9 +36,9 @@
          (r (right obj))
          (c (compare elem v)))
     (cond
-      ((= 0 c) (values v t))
-      ((< 0 c) (look-for elem l))
-      ((> 0 c) (look-for elem r)))))
+      ((= c 0) (values v t))
+      ((< c 0) (look-for elem l))
+      ((> c 0) (look-for elem r)))))
 
 (defun balance-items (a b c d x y z)
   (make-instance 'rb-tree
@@ -55,53 +55,60 @@
                                        :left c
                                        :right d)))
 
-(defun balance-black-red (obj)
-  (cond
-    ((equal 'red (left (left obj)))
-     (balance-items (left (left (left obj)))
-                    (right (left (left obj)))
-                    (right (left obj))
-                    (right obj)
-                    (value (left (left obj)))
-                    (value (left obj))
-                    (value obj)))
-    (t
-     (balance-items (left (left obj))
-                    (left (right (left obj)))
-                    (right (right (left obj)))
-                    (right obj)
-                    (value (left obj))
-                    (value (right (left obj)))
-                    (value obj)))))
-
-(defun balance-black-black (obj)
-  (cond
-    ((equal 'red (left (right obj)))
-     (balance-items (left obj)
-                    (left (left (right obj)))
-                    (right (left (right obj)))
-                    (right (right obj))
-                    (value obj)
-                    (value (left (right obj)))
-                    (value (right obj))))
-    (t
-     (balance-items (left obj)
-                    (left (right obj))
-                    (left (right (right obj)))
-                    (right (right (right obj)))
-                    (value obj)
-                    (value (right obj))
-                    (value (right (right obj)))))))
-
-(defun balance-black (obj)
-  (cond
-    ((equal 'red (left obj)) (balance-black-red obj))
-    (t (balance-black-black obj))))
-
 (defun balance (obj)
-  (cond
-    ((equal 'red (color obj)) obj)
-    (t (balance-black obj))))
+  (match obj
+    ((rb-tree :color 'black
+              :value z
+              :left (rb-tree :color 'red
+                             :value y
+                             :left (rb-tree
+                                    :color 'red
+                                    :value x
+                                    :left a
+                                    :right b)
+                             :right c)
+              :right d)
+     (balance-items a b c d x y z))
+    ((rb-tree :color 'black
+              :value z
+              :left (rb-tree :color 'red
+                             :value x
+                             :left a
+                             :right (rb-tree
+                                     :color 'red
+                                     :value y
+                                     :left b
+                                     :right c))
+              :right d)
+     (balance-items a b c d x y z))
+    ((rb-tree :color 'black
+              :value x
+              :left a
+              :right (rb-tree :color 'red
+                              :value z
+                              :left (rb-tree
+                                     :color 'red
+                                     :value y
+                                     :left b
+                                     :right c)
+                              :right d))
+     (balance-items a b c d x y z))
+    ((rb-tree :color 'black
+              :value x
+              :left a
+              :right (rb-tree :color 'red
+                              :value y
+                              :left b
+                              :right (rb-tree
+                                      :color 'red
+                                      :value z
+                                      :left c
+                                      :right d)))
+     (balance-items a b c d x y z))
+    ((rb-tree :color _
+              :value _
+              :left _
+              :right _) obj)))
 
 (defgeneric insert (elem obj)
   (:documentation "help method for rb-tree to insert an element"))
@@ -118,14 +125,14 @@
          (c (compare elem v))
          (col (color obj)))
     (cond
-      ((= 0 c) obj)
-      ((< 0 c) (balance
+      ((= c 0) obj)
+      ((< c 0) (balance
                 (make-instance 'rb-tree
                                :color col
                                :value v
                                :left (insert elem l)
                                :right r)))
-      ((> 0 c) (balance
+      ((> c 0) (balance
                 (make-instance 'rb-tree
                                :color col
                                :value v
@@ -171,14 +178,14 @@
          (c (compare elem v))
          (col (color obj)))
     (cond
-      ((= 0 c) (balance (take-out-aux obj)))
-      ((< 0 c) (balance
+      ((= c 0) (balance (take-out-aux obj)))
+      ((< c 0) (balance
                 (make-instance 'rb-tree
                                :color col
                                :value v
                                :left (take-out elem l)
                                :right r)))
-      ((> 0 c) (balance
+      ((> c 0) (balance
                 (make-instance 'rb-tree
                                :color col
                                :value v
@@ -192,8 +199,12 @@
           :initial-value (make-instance 'rb-tree-empty)))
 
 (defmethod head ((obj rb-tree))
-  (value obj))
+  (let ((v (value obj))
+        (l (left obj)))
+    (cond
+      ((nil? l) v)
+      (t (head l)))))
 
 (defmethod tail ((obj rb-tree))
-  (let ((v (value obj)))
+  (let ((v (head obj)))
     (take-out v obj)))
