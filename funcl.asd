@@ -16,6 +16,3 @@
                (:file "tests/lazy-queue-tests")
                (:file "tests/rb-tree-tests"))
   :perform (test-op (o c) (symbol-call :fiveam `#:run! (find-symbol "FUNCL-SUITE" "LAZY-THUNK-TESTS"))))
-
-                                        ; issues:
-                                        ; tests for rb-tree - error in balancing

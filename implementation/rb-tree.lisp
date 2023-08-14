@@ -105,10 +105,8 @@
                                       :left c
                                       :right d)))
      (balance-items a b c d x y z))
-    ((rb-tree :color _
-              :value _
-              :left _
-              :right _) obj)))
+    ((rb-tree) obj)
+    ((rb-tree-empty) obj)))
 
 (defgeneric insert (elem obj)
   (:documentation "help method for rb-tree to insert an element"))
