@@ -5,7 +5,8 @@
                (:file "implementation/lazy-thunk")
                (:file "implementation/defunclass")
                (:file "implementation/lazy-queue")
-               (:file "implementation/rb-tree"))
+               (:file "implementation/rb-tree")
+               (:file "implementation/trie"))
   :in-order-to ((test-op (test-op "funcl/tests"))))
 
 (defsystem "funcl/tests"
