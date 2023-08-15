@@ -104,7 +104,10 @@
                                         :value (value obj)
                                         :next (cons (concat-aux elem index value found)
                                                     (next obj))))
-           (t (concat-aux elem (+ 1 index) value found)))))))
+           (t (make-instance 'trie
+                             :letter (letter obj)
+                             :value (value obj)
+                             :next (concat-aux elem (+ 1 index) value found))))))))
 
 (defmethod concat (elem (obj trie-empty))
   (make-instance 'trie
