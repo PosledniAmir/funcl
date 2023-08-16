@@ -111,6 +111,7 @@
 
 (defun look-for-aux (text index obj)
   (cond
+    ((null obj) (values nil nil))
     ((>= (+ 1 index) (length text))
      (list-find (next obj)
                 (lambda (x) (equal (elt text index)
@@ -133,4 +134,4 @@
   (cond
     ((= 0 (length elem))
      (get-value obj))
-    (t (look-for-aux elem 0 obj))))
+    (t (get-value (look-for-aux elem 0 obj)))))
