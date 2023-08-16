@@ -35,90 +35,102 @@
 (defmethod matches? (elem index (obj trie))
   (char= (elt elem index) (letter obj)))
 
-(defun car? (list)
+(defun make-string-nodes (text index value)
   (cond
-    ((null list) nil)
-    (t (car list))))
+    ((>= (+ 1 index) (length text))
+     (make-instance 'trie
+                    :letter (elt text index)
+                    :value value
+                    :next nil))
+    (t
+     (make-instance 'trie
+                    :letter (elt text index)
+                    :next (list
+                            (make-string-nodes text
+                                               (+ index 1)
+                                               value))))))
 
-(defgeneric select-next (elem index obj)
-  (:documentation "aux function for selecting next node"))
-
-(defmethod select-next (elem index (obj trie-empty))
-  obj)
-
-(defmethod select-next (elem index (obj trie))
+(defun list-update-add (list predicate update add)
   (cond
-    ((>= index (length elem)) (make-instance 'trie-empty))
-    (t (let  ((result (car?
-                       (member-if (lambda (x) (matches? elem index x))
-                                  (next obj)))))
-         (if result result (make-instance 'trie-empty))))))
+    ((null list) (cons (funcall add) nil))
+    ((funcall predicate (car list)) (cons (funcall update (car list))
+                                          (cdr list)))
+    (t (cons (car list)
+             (list-update-add (cdr list)
+                              predicate
+                              update
+                              add)))))
 
-(defgeneric look-for-aux (elem index obj)
-  (:documentation "aux function for look-for in trie"))
+(defun merge-in (list node)
+  (list-update-add list
+                   (lambda (x) (equal (letter node) (letter x)))
+                   (lambda (x) (cond
+                                 ((null (next node))
+                                  (make-instance 'trie
+                                                 :letter (letter x)
+                                                 :value (value node)
+                                                 :next (next x)))
+                                 (t
+                                  (make-instance 'trie
+                                                 :letter (letter x)
+                                                 :value (value x)
+                                                 :next (merge-in (next x)
+                                                                 (car (next node)))))))
+                   (lambda () node)))
 
-(defmethod look-for-aux (elem index (obj trie-empty))
-  (values nil nil))
-
-(defmethod look-for-aux (elem index (obj trie))
+(defun make-rooted (text index value)
   (cond
-    ((>= index (length elem)) (if (contains-value? obj)
-                                  (values (value obj) t)
-                                  (values nil nil)))
-    (t (look-for-aux elem (+ 1 index) (select-next elem index obj)))))
+    ((= 0 (length text))
+     (make-instance 'trie
+                    :letter 'root
+                    :next nil
+                    :value value))
+    (t (make-instance 'trie
+                      :letter 'root
+                      :value nil
+                      :next (list (make-string-nodes text index value))))))
+
+(defmethod concat (elem (obj trie-empty))
+  (make-rooted (first elem) 0 (second elem)))
+
+(defmethod concat (elem (obj trie))
+  (car (merge-in (list obj)
+                 (make-rooted (first elem) 0 (second elem)))))
+
+(defun trie (&rest rest)
+  (reduce (lambda (x y) (concat y x))
+          rest
+          :initial-value (make-instance 'trie-empty)))
+
+(defun list-find (list predicate)
+  (cond
+    ((null list) (values nil nil))
+    ((funcall predicate (car list))
+     (values (car list) t))
+    (t (list-find (cdr list) predicate))))
+
+(defun look-for-aux (text index obj)
+  (cond
+    ((>= (+ 1 index) (length text))
+     (list-find (next obj)
+                (lambda (x) (equal (elt text index)
+                                   (letter x)))))
+    (t (look-for-aux text
+                     (+ index 1)
+                     (list-find (next obj)
+                                (lambda (x) (equal (elt text index)
+                                                   (letter x))))))))
+
+(defun get-value (obj)
+  (if (contains-value? obj)
+      (values (value obj) t)
+      (values nil nil)))
 
 (defmethod look-for (elem (obj trie-empty))
   (values nil nil))
 
 (defmethod look-for (elem (obj trie))
-  (look-for-aux elem 0 obj))
-
-(defun make-string-nodes (elem index value)
-  "Aux method making string of nodes"
   (cond
-    ((>= index (length elem)) nil)
-    ((= index (- (length elem) 1)) (make-instance 'trie
-                                                  :letter (elt elem index)
-                                                  :value value
-                                                  :next nil))
-    (t (make-instance 'trie
-                      :letter (elt elem index)
-                      :next (list (make-string-nodes elem (+ 1 index) value))))))
-
-(defgeneric concat-aux (elem index value obj)
-  (:documentation "aux function for concat for trie"))
-
-(defmethod concat-aux (elem index value (obj trie-empty))
-  (make-string-nodes elem index value))
-
-(defmethod concat-aux (elem index value (obj trie))
-  (cond
-    ((>= index (length elem)) (make-instance 'trie
-                                             :letter (letter obj)
-                                             :value value
-                                             :next (next obj)))
-    (t (let* ((found (select-next elem index obj)))
-         (cond
-           ((nil? found) (make-instance 'trie
-                                        :letter (letter obj)
-                                        :value (value obj)
-                                        :next (cons (concat-aux elem index value found)
-                                                    (next obj))))
-           (t (make-instance 'trie
-                             :letter (letter obj)
-                             :value (value obj)
-                             :next (concat-aux elem (+ 1 index) value found))))))))
-
-(defmethod concat (elem (obj trie-empty))
-  (make-instance 'trie
-                 :letter 'root
-                 :next (list (concat-aux (first elem) 0 (second elem) obj))))
-
-(defmethod concat (elem (obj trie))
-  (concat-aux (first elem) 0 (second elem) obj))
-
-(defun trie (&rest rest)
-  "constructor for a trie"
-  (reduce (lambda (x y) (concat y x))
-          rest
-          :initial-value (make-instance 'trie-empty)))
+    ((= 0 (length elem))
+     (get-value obj))
+    (t (look-for-aux elem 0 obj))))
