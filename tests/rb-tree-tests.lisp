@@ -20,7 +20,7 @@
         (= 5 (head (tail (tail (tail (tail result))))))
         (= 6 (head (tail (tail (tail (tail (tail result))))))))))
 
-(test concate-method
+(test concat-method
   (let ((result (concat 3 (concat 1 (rb-tree 2 4)))))
     (is (= 1 (head result))
         (= 2 (head (tail result)))

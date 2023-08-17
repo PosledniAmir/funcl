@@ -18,3 +18,36 @@
         (string= "testa" (look-for "testa" result))
         (string= "testb" (look-for "testb" result))
         (string= "testc" (look-for "testc" result)))))
+
+(test concat-method
+  (let ((result (concat (list "three" 3)
+                        (concat (list "one" 1)
+                                (trie (list "two" 2)
+                                      (list "four" 4))))))
+    (is (= 1 (look-for "one" result))
+        (= 2 (look-for "two" result))
+        (= 3 (look-for "three" result))
+        (= 4 (look-for "four" result)))))
+
+(test nil-method
+  (let ((result (trie)))
+    (is (nil? result))))
+
+(test look-for-method
+  (let ((result (trie (list "one"   1)
+                      (list "two"   2)
+                      (list "three" 3)
+                      (list "four"  4)
+                      (list "five"  5)
+                      (list "six"   6)
+                      (list "seven" 7)
+                      (list "eight" 8)
+                      (list "nine"  9))))
+    (is (look-for "one"   result)
+        (look-for "two"   result)
+        (look-for "three" result)
+        (look-for "five"  result)
+        (look-for "nine"  result)
+        (not (look-for "eleven" result))
+        (not (look-for "teen"   result))
+        (not (look-for "zero"   result)))))
