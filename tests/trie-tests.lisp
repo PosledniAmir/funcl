@@ -51,3 +51,23 @@
         (not (look-for "eleven" result))
         (not (look-for "teen"   result))
         (not (look-for "zero"   result)))))
+
+(test take-out-method
+  (let ((result (take-out "one"
+                          (take-out "nine"
+                                    (take-out "five"
+                                              (trie (list "one" 1)
+                                                    (list "two" 2)
+                                                    (list "three" 3)
+                                                    (list "four" 4)
+                                                    (list "five" 5)
+                                                    (list "six" 6)
+                                                    (list "seven" 7)
+                                                    (list "eight" 8)
+                                                    (list "nine" 9)))))))
+    (is (not (look-for "one" result))
+        (not (look-for "nine" result))
+        (not (look-for "five" result))
+        (look-for "two" result)
+        (look-for "three" result)
+        (look-for "four" result))))
