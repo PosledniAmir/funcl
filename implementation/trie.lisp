@@ -18,22 +18,13 @@
   nil)
 
 (defmethod contains-value? ((obj trie))
-  t)
+  (not (typep (value obj) 'no-value)))
 
 (defmethod nil? ((obj trie))
   nil)
 
 (defmethod nil? ((obj trie-empty))
   t)
-
-(defgeneric matches? (elem index obj)
-  (:documentation "aux function checking for the letters"))
-
-(defmethod matches? (elem index (obj trie-empty))
-  nil)
-
-(defmethod matches? (elem index (obj trie))
-  (char= (elt elem index) (letter obj)))
 
 (defun make-string-nodes (text index value)
   (cond
@@ -135,3 +126,62 @@
     ((= 0 (length elem))
      (get-value obj))
     (t (get-value (look-for-aux elem 0 obj)))))
+
+(defun list-remove (list predicate)
+  (cond
+    ((null list) nil)
+    ((funcall predicate (car list)) (cdr list))
+    (t (cons (car list) (list-remove (cdr list) predicate )))))
+
+(defun find-and-remove (list predicate)
+  (list
+   (list-find list predicate)
+   (list-remove list predicate)))
+
+(defun clean-pair (pair clean)
+  (let ((first (first pair))
+        (second (second pair)))
+    (cond
+      ((null first) second)
+      (t (let ((cleaned (funcall clean first)))
+           (cond
+             ((or (contains-value? cleaned)
+                  (not (null (next cleaned))))
+              (cons cleaned second))
+             (t second)))))))
+
+(defun take-out-aux (text index node)
+  (cond
+    ((>= (+ 1 index) (length text))
+     (make-instance 'trie
+                    :letter (letter node)
+                    :value (value node)
+                    :next (clean-pair (find-and-remove (next node)
+                                                       (lambda (x)
+                                                         (equal (elt text index)
+                                                                (letter x))))
+                                      (lambda (x) (make-instance 'trie
+                                                                 :letter (letter x)
+                                                                 :value (make-instance 'no-value)
+                                                                 :next (next x))))))
+    (t
+     (make-instance 'trie
+                    :letter (letter node)
+                    :value (value node)
+                    :next (clean-pair (find-and-remove (next node)
+                                                       (lambda (x)
+                                                         (equal (elt text index)
+                                                                (letter x))))
+                                      (lambda (x) (take-out-aux text (+ 1 index) x)))))))
+
+(defmethod take-out (text (obj trie-empty))
+  obj)
+
+(defmethod take-out (text (obj trie))
+  (cond
+    ((= 0 (length text))
+     (make-instance 'trie
+                    :letter 'root
+                    :value (make-instance 'no-value)
+                    :next (next obj)))
+    (t (take-out-aux text 0 obj))))
