@@ -114,9 +114,11 @@
                                                    (letter x))))))))
 
 (defun get-value (obj)
-  (if (contains-value? obj)
-      (values (value obj) t)
-      (values nil nil)))
+  (if (null obj)
+      (values nil nil)
+      (if (contains-value? obj)
+          (values (value obj) t)
+          (values nil nil))))
 
 (defmethod look-for (elem (obj trie-empty))
   (values nil nil))
