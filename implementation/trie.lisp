@@ -26,20 +26,47 @@
 (defmethod nil? ((obj trie-empty))
   t)
 
-(defun make-string-nodes (text index value)
+(defmethod head ((obj trie))
   (cond
-    ((>= (+ 1 index) (length text))
-     (make-instance 'trie
-                    :letter (elt text index)
-                    :value value
-                    :next nil))
-    (t
-     (make-instance 'trie
-                    :letter (elt text index)
-                    :next (list
-                            (make-string-nodes text
-                                               (+ index 1)
-                                               value))))))
+    ((contains-value? obj) (get-value obj))
+    (t (head (car (next obj))))))
+
+(defun make-trie (letter value next)
+  (make-instance 'trie
+                 :letter letter
+                 :value value
+                 :next next))
+
+(defun make-no-val ()
+  (make-instance 'no-value))
+
+(defun cond-cons (elt lst pred)
+  (cond
+    ((funcall pred elt) (cons elt lst))
+    (t lst)))
+
+(defmethod tail ((obj trie))
+  (cond
+    ((contains-value? obj) (make-trie (letter obj) (make-no-val) (next obj)))
+    (t (make-trie (letter obj)
+                  (value obj)
+                  (cond-cons (tail (car (next obj)))
+                             (cdr (next obj))
+                             (lambda (x) (or (contains-value? x)
+                                             (not (null (next x))))))))))
+
+(defun cons-char-trie (char trie)
+  (make-trie char (make-no-val) (list trie)))
+
+(defmethod make-string-nodes (text value)
+  (let ((lst (reverse (coerce text 'list))))
+    (cond
+      ((null lst) (make-trie 'root value nil))
+      (t (make-trie 'root
+                    (make-no-val)
+                    (list (reduce (lambda (x y) (cons-char-trie y x))
+                                  (cdr lst)
+                                  :initial-value (make-trie (car lst) value nil))))))))
 
 (defun list-update-add (list predicate update add)
   (cond
@@ -56,37 +83,20 @@
   (list-update-add list
                    (lambda (x) (equal (letter node) (letter x)))
                    (lambda (x) (cond
-                                 ((null (next node))
-                                  (make-instance 'trie
-                                                 :letter (letter x)
-                                                 :value (value node)
-                                                 :next (next x)))
-                                 (t
-                                  (make-instance 'trie
-                                                 :letter (letter x)
-                                                 :value (value x)
-                                                 :next (merge-in (next x)
-                                                                 (car (next node)))))))
+                                 ((null (next node)) (make-trie (letter x) (value node) (next x)))
+                                 (t (make-trie (letter x) (value x) (merge-in (next x) (car (next node)))))))
                    (lambda () node)))
 
-(defun make-rooted (text index value)
-  (cond
-    ((= 0 (length text))
-     (make-instance 'trie
-                    :letter 'root
-                    :next nil
-                    :value value))
-    (t (make-instance 'trie
-                      :letter 'root
-                      :value nil
-                      :next (list (make-string-nodes text index value))))))
-
 (defmethod concat (elem (obj trie-empty))
-  (make-rooted (first elem) 0 (second elem)))
+  (let ((text (first elem))
+        (value (second elem)))
+    (make-string-nodes text value)))
 
 (defmethod concat (elem (obj trie))
-  (car (merge-in (list obj)
-                 (make-rooted (first elem) 0 (second elem)))))
+  (let ((text (first elem))
+        (value (second elem))
+        (lst (list obj)))
+    (car (merge-in lst (make-string-nodes text value)))))
 
 (defun trie (&rest rest)
   (reduce (lambda (x y) (concat y x))
@@ -96,22 +106,20 @@
 (defun list-find (list predicate)
   (cond
     ((null list) (values nil nil))
-    ((funcall predicate (car list))
-     (values (car list) t))
+    ((funcall predicate (car list)) (values (car list) t))
     (t (list-find (cdr list) predicate))))
 
-(defun look-for-aux (text index obj)
-  (cond
-    ((null obj) (values nil nil))
-    ((>= (+ 1 index) (length text))
-     (list-find (next obj)
-                (lambda (x) (equal (elt text index)
-                                   (letter x)))))
-    (t (look-for-aux text
-                     (+ index 1)
-                     (list-find (next obj)
-                                (lambda (x) (equal (elt text index)
-                                                   (letter x))))))))
+(defun find-in (list node)
+  (list-find list
+             (lambda (x) (and (equal (letter x) (letter node))
+                              (or (null (next node))
+                                  (find-in (next x) (car (next node))))))))
+
+(defmethod look-for (text (obj trie-empty))
+  (values nil nil))
+
+(defmethod look-for (text (obj trie))
+  (find-in (list obj) (make-string-nodes text (make-no-val))))
 
 (defun get-value (obj)
   (if (null obj)
@@ -119,15 +127,6 @@
       (if (contains-value? obj)
           (values (value obj) t)
           (values nil nil))))
-
-(defmethod look-for (elem (obj trie-empty))
-  (values nil nil))
-
-(defmethod look-for (elem (obj trie))
-  (cond
-    ((= 0 (length elem))
-     (get-value obj))
-    (t (get-value (look-for-aux elem 0 obj)))))
 
 (defun list-remove (list predicate)
   (cond
