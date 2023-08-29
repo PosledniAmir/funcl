@@ -103,17 +103,18 @@
           rest
           :initial-value (make-instance 'trie-empty)))
 
-(defun list-find (list predicate)
+(defun list-find-call (list predicate func)
   (cond
     ((null list) (values nil nil))
-    ((funcall predicate (car list)) (values (car list) t))
-    (t (list-find (cdr list) predicate))))
+    ((funcall predicate (car list)) (funcall func (car list)))
+    (t (list-find-call (cdr list) predicate func))))
 
 (defun find-in (list node)
-  (list-find list
-             (lambda (x) (and (equal (letter x) (letter node))
-                              (or (null (next node))
-                                  (find-in (next x) (car (next node))))))))
+  (list-find-call list
+                  (lambda (x) (equal (letter x) (letter node)))
+                  (lambda (x) (cond
+                                ((null (next node)) (value x))
+                                (t (find-in (next x) (car (next node))))))))
 
 (defmethod look-for (text (obj trie-empty))
   (values nil nil))
