@@ -129,7 +129,7 @@
      (let ((updated (funcall update (car lst))))
        (if (funcall remove updated)
            (cdr lst)
-           (cons update (cdr lst)))))
+           (cons updated (cdr lst)))))
     (t (cons (car lst)
              (list-update-remove (cdr lst) pred update remove)))))
 
@@ -142,8 +142,13 @@
                       (lambda (x) (and (null (next x))
                                        (not (contains-value? x))))))
 
+(defun nil-to-empty (elem)
+  (cond
+    ((null elem) (make-instance 'trie-empty))
+    (t elem)))
+
 (defmethod take-out (elem (obj trie-empty))
   obj)
 
 (defmethod take-out (elem (obj trie))
-  (separate-from (list obj) (make-string-nodes elem nil)))
+  (nil-to-empty (car (separate-from (list obj) (make-string-nodes elem nil)))))
