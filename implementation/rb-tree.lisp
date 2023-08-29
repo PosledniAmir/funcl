@@ -57,7 +57,7 @@
 
 (defun balance (obj)
   (match obj
-    ((rb-tree:rb-tree :color 'black
+    ((rb-tree :color 'black
               :value z
               :left (rb-tree :color 'red
                              :value y

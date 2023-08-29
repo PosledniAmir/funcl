@@ -17,6 +17,4 @@
                (:file "tests/lazy-queue-tests")
                (:file "tests/rb-tree-tests")
                (:file "tests/trie-tests"))
-  :perform (test-op (o c) (symbol-call :fiveam `#:run! (find-symbol "FUNCL-SUITE" "LAZY-THUNK-TESTS"))))
-
-; add remove for trie
+  :perform (test-op (o c) (symbol-call :fiveam `#:run! (find-symbol "FUNCL-SUITE" "FUNCL-SUITE"))))

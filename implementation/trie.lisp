@@ -28,7 +28,7 @@
 
 (defmethod head ((obj trie))
   (cond
-    ((contains-value? obj) (get-value obj))
+    ((contains-value? obj) (value obj))
     (t (head (car (next obj))))))
 
 (defun make-trie (letter value next)
