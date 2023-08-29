@@ -106,7 +106,7 @@
 (defun list-find-call (list predicate func)
   (cond
     ((null list) (values nil nil))
-    ((funcall predicate (car list)) (funcall func (car list)))
+    ((funcall predicate (car list)) (values (funcall func (car list)) t))
     (t (list-find-call (cdr list) predicate func))))
 
 (defun find-in (list node)
@@ -122,68 +122,28 @@
 (defmethod look-for (text (obj trie))
   (find-in (list obj) (make-string-nodes text (make-no-val))))
 
-(defun get-value (obj)
-  (if (null obj)
-      (values nil nil)
-      (if (contains-value? obj)
-          (values (value obj) t)
-          (values nil nil))))
-
-(defun list-remove (list predicate)
+(defun list-update-remove (lst pred update remove)
   (cond
-    ((null list) nil)
-    ((funcall predicate (car list)) (cdr list))
-    (t (cons (car list) (list-remove (cdr list) predicate )))))
+    ((null lst) nil)
+    ((funcall pred (car lst))
+     (let ((updated (funcall update (car lst))))
+       (if (funcall remove updated)
+           (cdr lst)
+           (cons update (cdr lst)))))
+    (t (cons (car lst)
+             (list-update-remove (cdr lst) pred update remove)))))
 
-(defun find-and-remove (list predicate)
-  (list
-   (list-find list predicate)
-   (list-remove list predicate)))
+(defun separate-from (lst node)
+  (list-update-remove lst
+                      (lambda (x) (equal (letter x) (letter node)))
+                      (lambda (x) (cond
+                                    ((null (next node)) (make-trie (letter x) (make-no-val) (next x)))
+                                    (t (make-trie (letter x) (value x) (separate-from (next x) (car (next node)))))))
+                      (lambda (x) (and (null (next x))
+                                       (not (contains-value? x))))))
 
-(defun clean-pair (pair clean)
-  (let ((first (first pair))
-        (second (second pair)))
-    (cond
-      ((null first) second)
-      (t (let ((cleaned (funcall clean first)))
-           (cond
-             ((or (contains-value? cleaned)
-                  (not (null (next cleaned))))
-              (cons cleaned second))
-             (t second)))))))
-
-(defun take-out-aux (text index node)
-  (cond
-    ((>= (+ 1 index) (length text))
-     (make-instance 'trie
-                    :letter (letter node)
-                    :value (value node)
-                    :next (clean-pair (find-and-remove (next node)
-                                                       (lambda (x)
-                                                         (equal (elt text index)
-                                                                (letter x))))
-                                      (lambda (x) (make-instance 'trie
-                                                                 :letter (letter x)
-                                                                 :value (make-instance 'no-value)
-                                                                 :next (next x))))))
-    (t
-     (make-instance 'trie
-                    :letter (letter node)
-                    :value (value node)
-                    :next (clean-pair (find-and-remove (next node)
-                                                       (lambda (x)
-                                                         (equal (elt text index)
-                                                                (letter x))))
-                                      (lambda (x) (take-out-aux text (+ 1 index) x)))))))
-
-(defmethod take-out (text (obj trie-empty))
+(defmethod take-out (elem (obj trie-empty))
   obj)
 
-(defmethod take-out (text (obj trie))
-  (cond
-    ((= 0 (length text))
-     (make-instance 'trie
-                    :letter 'root
-                    :value (make-instance 'no-value)
-                    :next (next obj)))
-    (t (take-out-aux text 0 obj))))
+(defmethod take-out (elem (obj trie))
+  (separate-from (list obj) (make-string-nodes elem nil)))
