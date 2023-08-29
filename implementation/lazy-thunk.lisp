@@ -21,7 +21,6 @@
   (slot-boundp obj 'value))
 
 (defmethod print-object ((obj thunk) stream)
-  "prints either value of thunk or UNREALIZED"
   (print-unreadable-object (obj stream)
     (cond
       ((realized? obj) (format stream "~a" (value obj)))

@@ -14,6 +14,9 @@
      (next nil))
   (:documentation "node with no value"))
 
+(defgeneric contains-value? (obj)
+  (:documentation "aux function for checking whether node is non-empty"))
+
 (defmethod contains-value? ((obj trie-empty))
   nil)
 
@@ -32,15 +35,18 @@
     (t (head (car (next obj))))))
 
 (defun make-trie (letter value next)
+  "aux constructor for trie"
   (make-instance 'trie
                  :letter letter
                  :value value
                  :next next))
 
 (defun make-no-val ()
+  "aux constructor for no-value"
   (make-instance 'no-value))
 
 (defun cond-cons (elt lst pred)
+  "conditional cons"
   (cond
     ((funcall pred elt) (cons elt lst))
     (t lst)))
@@ -59,6 +65,7 @@
   (make-trie char (make-no-val) (list trie)))
 
 (defmethod make-string-nodes (text value)
+  "creates trie containing text and value only"
   (let ((lst (reverse (coerce text 'list))))
     (cond
       ((null lst) (make-trie 'root value nil))
@@ -69,6 +76,8 @@
                                   :initial-value (make-trie (car lst) value nil))))))))
 
 (defun list-update-add (list predicate update add)
+  "finds first element that evaluates predicate to t and updates is using update
+if not successful it adds it using add function"
   (cond
     ((null list) (cons (funcall add) nil))
     ((funcall predicate (car list)) (cons (funcall update (car list))
@@ -80,6 +89,7 @@
                               add)))))
 
 (defun merge-in (list node)
+  "merges node into a list of nodes"
   (list-update-add list
                    (lambda (x) (equal (letter node) (letter x)))
                    (lambda (x) (cond
@@ -99,17 +109,22 @@
     (car (merge-in lst (make-string-nodes text value)))))
 
 (defun trie (&rest rest)
+  "constructor for trie"
   (reduce (lambda (x y) (concat y x))
           rest
           :initial-value (make-instance 'trie-empty)))
 
 (defun list-find-call (list predicate func)
+  "finds first element according to predicate
+if successful returns (values val t) where val is func applied to the found element
+otherwise returns (values nil nil)"
   (cond
     ((null list) (values nil nil))
     ((funcall predicate (car list)) (values (funcall func (car list)) t))
     (t (list-find-call (cdr list) predicate func))))
 
 (defun find-in (list node)
+  "finds node in the list of nodes"
   (list-find-call list
                   (lambda (x) (equal (letter x) (letter node)))
                   (lambda (x) (cond
@@ -123,6 +138,9 @@
   (find-in (list obj) (make-string-nodes text (make-no-val))))
 
 (defun list-update-remove (lst pred update remove)
+  "finds element in lst according to the predicate
+if successful then updates the element according to the update function
+if updated element meets remove predicate then it is removed from the list"
   (cond
     ((null lst) nil)
     ((funcall pred (car lst))
@@ -134,6 +152,7 @@
              (list-update-remove (cdr lst) pred update remove)))))
 
 (defun separate-from (lst node)
+  "removes node from list"
   (list-update-remove lst
                       (lambda (x) (equal (letter x) (letter node)))
                       (lambda (x) (cond
@@ -143,6 +162,7 @@
                                        (not (contains-value? x))))))
 
 (defun nil-to-empty (elem)
+  "transforms nil to trie-empty, otherwise returns elem"
   (cond
     ((null elem) (make-instance 'trie-empty))
     (t elem)))

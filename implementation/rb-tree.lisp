@@ -4,14 +4,15 @@
 
 (in-package :rb-tree)
 
-(defunclass rb-tree-empty () () (:documentation "empty node"))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defunclass rb-tree-empty () () (:documentation "empty node"))
 
-(defunclass rb-tree ()
-    ((color 'black)
-     (value (error "slot value must be set in rb-tree"))
-     (left (make-instance 'rb-tree-empty))
-     (right (make-instance 'rb-tree-empty)))
-  (:documentation "okasaki functional red-black tree"))
+  (defunclass rb-tree ()
+      ((color 'black)
+       (value (error "slot value must be set in rb-tree"))
+       (left (make-instance 'rb-tree-empty))
+       (right (make-instance 'rb-tree-empty)))
+    (:documentation "okasaki functional red-black tree")))
 
 (defmethod nil? ((obj rb-tree-empty))
   t)
@@ -41,6 +42,7 @@
       ((> c 0) (look-for elem r)))))
 
 (defun balance-items (a b c d x y z)
+  "balances the tree according to okasaki's paper"
   (make-instance 'rb-tree
                  :color 'red
                  :value y
@@ -56,6 +58,7 @@
                                        :right d)))
 
 (defun balance (obj)
+  "balance function implemented as in okasaki's paper"
   (match obj
     ((rb-tree :color 'black
               :value z
@@ -108,15 +111,15 @@
     ((rb-tree) obj)
     ((rb-tree-empty) obj)))
 
-(defgeneric insert (elem obj)
-  (:documentation "help method for rb-tree to insert an element"))
+(defgeneric concat-aux (elem obj)
+  (:documentation "aux function for rb-tree to insert an element"))
 
-(defmethod insert (elem (obj rb-tree-empty))
+(defmethod concat-aux (elem (obj rb-tree-empty))
   (make-instance 'rb-tree
                  :color 'red
                  :value elem))
 
-(defmethod insert (elem (obj rb-tree))
+(defmethod concat-aux (elem (obj rb-tree))
   (let* ((v (value obj))
          (l (left obj))
          (r (right obj))
@@ -128,20 +131,20 @@
                 (make-instance 'rb-tree
                                :color col
                                :value v
-                               :left (insert elem l)
+                               :left (concat-aux elem l)
                                :right r)))
       ((> c 0) (balance
                 (make-instance 'rb-tree
                                :color col
                                :value v
                                :left l
-                               :right (insert elem r)))))))
+                               :right (concat-aux elem r)))))))
 
 (defmethod concat (elem (obj rb-tree))
-  (make-black (insert elem obj)))
+  (make-black (concat-aux elem obj)))
 
 (defmethod concat (elem (obj rb-tree-empty))
-  (make-black (insert elem obj)))
+  (make-black (concat-aux elem obj)))
 
 (defgeneric take-out-aux (obj)
   (:documentation "Aux method for taking out"))
