@@ -109,7 +109,7 @@ if not successful it adds it using add function"
     (car (merge-in lst (make-string-nodes text value)))))
 
 (defun trie (&rest rest)
-  "constructor for trie"
+  "Returns a trie collection consisting of function arguments as elements."
   (reduce (lambda (x y) (concat y x))
           rest
           :initial-value (make-instance 'trie-empty)))

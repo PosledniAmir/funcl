@@ -56,7 +56,7 @@
    (<= (right-size obj) 0)))
 
 (defun lazy-queue (&rest rest)
-  "constructor for a lazy queue"
+  "Returns a queue collection consisting of function arguments as elements."
   (reduce (lambda (x y) (concat  y x))
           rest
           :initial-value (make-instance 'lazy-queue)))

@@ -18,23 +18,23 @@
 (defgeneric force (object)
   (:documentation "Forces the lazy evaluation to evaluate"))
 
-(defgeneric head (object)
-  (:documentation "Obtains first element from a collection"))
+(defgeneric head (collection)
+  (:documentation "Selects the 'first' element in the collection and returns it."))
 
-(defgeneric tail (object)
-  (:documentation "Obtains rest of the collection (without the first element)"))
+(defgeneric tail (collection)
+  (:documentation "Returns the collection without the 'first' element."))
 
-(defgeneric concat (element object)
-  (:documentation "Inserts element into the collection"))
+(defgeneric concat (element collection)
+  (:documentation "Concatenates the element with the collections, returns a new collection."))
 
-(defgeneric nil? (object)
-  (:documentation "Checks whether the collection is empty"))
+(defgeneric nil? (collection)
+  (:documentation "Checks whether the collection is empty."))
 
-(defgeneric look-for (element object)
-  (:documentation "Checks whether the collection contains element"))
+(defgeneric look-for (element collection)
+  (:documentation "Looks for the item given by the key in the collection."))
 
-(defgeneric take-out (element object)
-  (:documentation "Removes the element from the collection"))
+(defgeneric take-out (element collection)
+  (:documentation "Removes the item given by the key from the collection."))
 
 (defgeneric compare (first second)
   (:documentation "Compares the first element to the second"))

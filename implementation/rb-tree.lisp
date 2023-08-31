@@ -194,7 +194,7 @@
                                :right (take-out elem r)))))))
 
 (defun rb-tree (&rest rest)
-  "constructor for a red black tree"
+  "Returns a red-black tree collection consisting of function arguments as elements."
   (reduce (lambda (x y) (concat y x))
           rest
           :initial-value (make-instance 'rb-tree-empty)))
