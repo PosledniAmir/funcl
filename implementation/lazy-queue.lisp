@@ -60,3 +60,15 @@
   (reduce (lambda (x y) (concat  y x))
           rest
           :initial-value (make-instance 'lazy-queue)))
+
+(defmethod look-for (element (obj lazy-queue))
+  (cond
+    ((nil? obj) (values nil nil))
+    ((equal? element (head obj)) (values (head obj) t))
+    (t (look-for element (tail obj)))))
+
+(defmethod take-out (element (obj lazy-queue))
+  (cond
+    ((nil? obj) (make-instance 'lazy-queue))
+    ((equal? element (head obj)) (tail obj))
+    (t (concat (head obj) (take-out element (tail obj))))))

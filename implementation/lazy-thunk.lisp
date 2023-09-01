@@ -61,3 +61,15 @@
   (reduce (lambda (x y) (concat y x))
           (reverse body)
           :initial-value (lazy nil)))
+
+(defmethod look-for (element (obj thunk))
+  (cond
+    ((nil? obj) (values nil nil))
+    ((equal? element (head obj)) (values (head obj) t))
+    (t (look-for element (tail obj)))))
+
+(defmethod take-out (element (obj thunk))
+  (cond
+    ((nil? obj) (lazy nil))
+    ((equal? element (head obj)) (tail obj))
+    (t (concat (head obj) (take-out element (tail obj))))))

@@ -8,7 +8,8 @@
            :nil?
            :look-for
            :take-out
-           :compare))
+           :compare
+           :equal?))
 
 (in-package :generics)
 
@@ -37,4 +38,7 @@
   (:documentation "Removes the item given by the key from the collection."))
 
 (defgeneric compare (first second)
-  (:documentation "Compares the first element to the second"))
+  (:documentation "Compares the first element to the second."))
+
+(defgeneric equal? (first second)
+  (:documentation "Tells whether the elements are equal."))

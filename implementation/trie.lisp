@@ -91,7 +91,7 @@ if not successful it adds it using add function"
 (defun merge-in (list node)
   "merges node into a list of nodes"
   (list-update-add list
-                   (lambda (x) (equal (letter node) (letter x)))
+                   (lambda (x) (equal? (letter node) (letter x)))
                    (lambda (x) (cond
                                  ((null (next node)) (make-trie (letter x) (value node) (next x)))
                                  (t (make-trie (letter x) (value x) (merge-in (next x) (car (next node)))))))
@@ -126,7 +126,7 @@ otherwise returns (values nil nil)"
 (defun find-in (list node)
   "finds node in the list of nodes"
   (list-find-call list
-                  (lambda (x) (equal (letter x) (letter node)))
+                  (lambda (x) (equal? (letter x) (letter node)))
                   (lambda (x) (cond
                                 ((null (next node)) (value x))
                                 (t (find-in (next x) (car (next node))))))))
@@ -154,7 +154,7 @@ if updated element meets remove predicate then it is removed from the list"
 (defun separate-from (lst node)
   "removes node from list"
   (list-update-remove lst
-                      (lambda (x) (equal (letter x) (letter node)))
+                      (lambda (x) (equal? (letter x) (letter node)))
                       (lambda (x) (cond
                                     ((null (next node)) (make-trie (letter x) (make-no-val) (next x)))
                                     (t (make-trie (letter x) (value x) (separate-from (next x) (car (next node)))))))
@@ -172,3 +172,9 @@ if updated element meets remove predicate then it is removed from the list"
 
 (defmethod take-out (elem (obj trie))
   (nil-to-empty (car (separate-from (list obj) (make-string-nodes elem nil)))))
+
+(defmethod equal? ((first symbol) (second symbol))
+  (equal first second))
+
+(defmethod equal? ((first character) (second character))
+  (char= first second))
