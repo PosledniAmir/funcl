@@ -66,7 +66,7 @@
 
 (defmethod make-string-nodes (text value)
   "creates trie containing text and value only"
-  (let ((lst (reverse (coerce text 'list))))
+  (let ((lst (reverse (to-list text))))
     (cond
       ((null lst) (make-trie 'root value nil))
       (t (make-trie 'root

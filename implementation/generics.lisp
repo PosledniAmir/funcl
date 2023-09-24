@@ -9,7 +9,8 @@
            :look-for
            :take-out
            :compare
-           :equal?))
+           :equal?
+           :to-list))
 
 (in-package :generics)
 
@@ -42,3 +43,6 @@
 
 (defgeneric equal? (first second)
   (:documentation "Tells whether the elements are equal."))
+
+(defgeneric to-list (collection)
+  (:documentation "Casts collection to a list"))
