@@ -172,9 +172,3 @@ if updated element meets remove predicate then it is removed from the list"
 
 (defmethod take-out (elem (obj trie))
   (nil-to-empty (car (separate-from (list obj) (make-string-nodes elem nil)))))
-
-(defmethod equal? ((first symbol) (second symbol))
-  (equal first second))
-
-(defmethod equal? ((first character) (second character))
-  (char= first second))
