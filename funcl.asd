@@ -4,12 +4,12 @@
   :depends-on ("bordeaux-threads"
                "trivia")
   :components ((:file "implementation/generics")
-               (:file "implementation/generics-impl" :depends-on ("generics"))
-               (:file "implementation/lazy-thunk" :depends-on ("generics" "generics-impl"))
-               (:file "implementation/defunclass" :depends-on ("generics" "generics-impl"))
-               (:file "implementation/lazy-queue" :depends-on ("lazy-thunk" "defunclass" "generics" "generics-impl"))
-               (:file "implementation/rb-tree" :depends-on ("defunclass" "generics" "generics-impl"))
-               (:file "implementation/trie" :depends-on ("defunclass" "generics")))
+               (:file "implementation/generics-impl" :depends-on ("implementation/generics"))
+               (:file "implementation/lazy-thunk" :depends-on ("implementation/generics" "implementation/generics-impl"))
+               (:file "implementation/defunclass" :depends-on ("implementation/generics" "implementation/generics-impl"))
+               (:file "implementation/lazy-queue" :depends-on ("implementation/lazy-thunk" "implementation/defunclass" "implementation/generics" "implementation/generics-impl"))
+               (:file "implementation/rb-tree" :depends-on ("implementation/defunclass" "implementation/generics" "implementation/generics-impl"))
+               (:file "implementation/trie" :depends-on ("implementation/defunclass" "implementation/generics")))
   :in-order-to ((test-op (test-op "funcl/tests"))))
 
 (defsystem "funcl/tests"
