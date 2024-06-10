@@ -21,7 +21,7 @@
   nil)
 
 (defmethod contains-value? ((obj trie))
-  (not (typep (value obj) 'no-value)))
+  (not (typep (@value obj) 'no-value)))
 
 (defmethod nil? ((obj trie))
   nil)
@@ -31,15 +31,12 @@
 
 (defmethod head ((obj trie))
   (cond
-    ((contains-value? obj) (value obj))
-    (t (head (car (next obj))))))
+    ((contains-value? obj) (@value obj))
+    (t (head (car (@next obj))))))
 
 (defun make-trie (letter value next)
   "aux constructor for trie"
-  (make-instance 'trie
-                 :letter letter
-                 :value value
-                 :next next))
+  (<trie> :letter letter :value value :next next))
 
 (defun make-no-val ()
   "aux constructor for no-value"
@@ -53,13 +50,13 @@
 
 (defmethod tail ((obj trie))
   (cond
-    ((contains-value? obj) (make-trie (letter obj) (make-no-val) (next obj)))
-    (t (make-trie (letter obj)
-                  (value obj)
-                  (cond-cons (tail (car (next obj)))
-                             (cdr (next obj))
+    ((contains-value? obj) (make-trie (@letter obj) (make-no-val) (@next obj)))
+    (t (make-trie (@letter obj)
+                  (@value obj)
+                  (cond-cons (tail (car (@next obj)))
+                             (cdr (@next obj))
                              (lambda (x) (or (contains-value? x)
-                                             (not (null (next x))))))))))
+                                             (not (null (@next x))))))))))
 
 (defun cons-char-trie (char trie)
   (make-trie char (make-no-val) (list trie)))
@@ -91,10 +88,10 @@ if not successful it adds it using add function"
 (defun merge-in (list node)
   "merges node into a list of nodes"
   (list-update-add list
-                   (lambda (x) (equal? (letter node) (letter x)))
+                   (lambda (x) (equal? (@letter node) (@letter x)))
                    (lambda (x) (cond
-                                 ((null (next node)) (make-trie (letter x) (value node) (next x)))
-                                 (t (make-trie (letter x) (value x) (merge-in (next x) (car (next node)))))))
+                                 ((null (@next node)) (make-trie (@letter x) (@value node) (@next x)))
+                                 (t (make-trie (@letter x) (@value x) (merge-in (@next x) (car (@next node)))))))
                    (lambda () node)))
 
 (defmethod concat (elem (obj trie-empty))
@@ -126,10 +123,10 @@ otherwise returns (values nil nil)"
 (defun find-in (list node)
   "finds node in the list of nodes"
   (list-find-call list
-                  (lambda (x) (equal? (letter x) (letter node)))
+                  (lambda (x) (equal? (@letter x) (@letter node)))
                   (lambda (x) (cond
-                                ((null (next node)) (value x))
-                                (t (find-in (next x) (car (next node))))))))
+                                ((null (@next node)) (@value x))
+                                (t (find-in (@next x) (car (@next node))))))))
 
 (defmethod look-for (text (obj trie-empty))
   (values nil nil))
@@ -154,17 +151,17 @@ if updated element meets remove predicate then it is removed from the list"
 (defun separate-from (lst node)
   "removes node from list"
   (list-update-remove lst
-                      (lambda (x) (equal? (letter x) (letter node)))
+                      (lambda (x) (equal? (@letter x) (@letter node)))
                       (lambda (x) (cond
-                                    ((null (next node)) (make-trie (letter x) (make-no-val) (next x)))
-                                    (t (make-trie (letter x) (value x) (separate-from (next x) (car (next node)))))))
-                      (lambda (x) (and (null (next x))
+                                    ((null (@next node)) (make-trie (@letter x) (make-no-val) (@next x)))
+                                    (t (make-trie (@letter x) (@value x) (separate-from (@next x) (car (@next node)))))))
+                      (lambda (x) (and (null (@next x))
                                        (not (contains-value? x))))))
 
 (defun nil-to-empty (elem)
   "transforms nil to trie-empty, otherwise returns elem"
   (cond
-    ((null elem) (make-instance 'trie-empty))
+    ((null elem) (<trie-empty>))
     (t elem)))
 
 (defmethod take-out (elem (obj trie-empty))
