@@ -10,8 +10,8 @@
   (defunclass rb-tree ()
       ((color 'black)
        (value (error "slot value must be set in rb-tree"))
-       (left (make-instance 'rb-tree-empty))
-       (right (make-instance 'rb-tree-empty)))
+       (left (<rb-tree-empty>))
+       (right (<rb-tree-empty>)))
     (:documentation "okasaki functional red-black tree")))
 
 (defmethod nil? ((obj rb-tree-empty))
@@ -22,19 +22,18 @@
 
 (defun make-black (obj)
   "swaps color to black"
-  (make-instance 'rb-tree
-                 :color 'black
-                 :value (value obj)
-                 :left (left obj)
-                 :right (right obj)))
+  (<rb-tree> :color 'black
+             :value (@value obj)
+             :left (@left obj)
+             :right (@right obj)))
 
 (defmethod look-for (elem (obj rb-tree-empty))
   (values nil nil))
 
 (defmethod look-for (elem (obj rb-tree))
-  (let* ((v (value obj))
-         (l (left obj))
-         (r (right obj))
+  (let* ((v (@value obj))
+         (l (@left obj))
+         (r (@right obj))
          (c (compare elem v)))
     (cond
       ((= c 0) (values v t))
@@ -43,19 +42,16 @@
 
 (defun balance-items (a b c d x y z)
   "balances the tree according to okasaki's paper"
-  (make-instance 'rb-tree
-                 :color 'red
-                 :value y
-                 :left (make-instance 'rb-tree
-                                      :color 'black
-                                      :value x
-                                      :left a
-                                      :right b)
-                 :right (make-instance 'rb-tree
-                                       :color 'black
-                                       :value z
-                                       :left c
-                                       :right d)))
+  (<rb-tree> :color 'red
+             :value y
+             :left (<rb-tree> :color 'black
+                              :value x
+                              :left a
+                              :right b)
+             :right (<rb-tree> :color 'black
+                               :value z
+                               :left c
+                               :right d)))
 
 (defun balance (obj)
   "balance function implemented as in okasaki's paper"
@@ -115,30 +111,26 @@
   (:documentation "aux function for rb-tree to insert an element"))
 
 (defmethod concat-aux (elem (obj rb-tree-empty))
-  (make-instance 'rb-tree
-                 :color 'red
-                 :value elem))
+  (<rb-tree> :color 'red :value elem))
 
 (defmethod concat-aux (elem (obj rb-tree))
-  (let* ((v (value obj))
-         (l (left obj))
-         (r (right obj))
+  (let* ((v (@value obj))
+         (l (@left obj))
+         (r (@right obj))
          (c (compare elem v))
-         (col (color obj)))
+         (col (@color obj)))
     (cond
       ((= c 0) obj)
       ((< c 0) (balance
-                (make-instance 'rb-tree
-                               :color col
-                               :value v
-                               :left (concat-aux elem l)
-                               :right r)))
+                (<rb-tree> :color col
+                           :value v
+                           :left (concat-aux elem l)
+                           :right r)))
       ((> c 0) (balance
-                (make-instance 'rb-tree
-                               :color col
-                               :value v
-                               :left l
-                               :right (concat-aux elem r)))))))
+                (<rb-tree> :color col
+                           :value v
+                           :left l
+                           :right (concat-aux elem r)))))))
 
 (defmethod concat (elem (obj rb-tree))
   (make-black (concat-aux elem obj)))
@@ -156,36 +148,33 @@
   obj)
 
 (defmethod take-out-aux ((obj rb-tree))
-  (let* ((l (left obj))
-         (r (right obj))
-         (c (color obj)))
+  (let* ((l (@left obj))
+         (r (@right obj))
+         (c (@color obj)))
     (cond
-      ((not (nil? l)) (make-instance 'rb-tree
-                                     :color c
-                                     :value (value l)
-                                     :left (take-out-aux l)
-                                     :right r))
-      ((not (nil? r)) (make-instance 'rb-tree
-                                     :color c
-                                     :value (value r)
-                                     :left l
-                                     :right (take-out-aux r)))
-      (t (make-instance 'rb-tree-empty)))))
+      ((not (nil? l)) (<rb-tree> :color c
+                                 :value (@value l)
+                                 :left (take-out-aux l)
+                                 :right r))
+      ((not (nil? r)) (<rb-tree> :color c
+                                 :value (@value r)
+                                 :left l
+                                 :right (take-out-aux r)))
+      (t (<rb-tree-empty>)))))
 
 (defmethod take-out (elem (obj rb-tree))
-  (let* ((v (value obj))
-         (l (left obj))
-         (r (right obj))
+  (let* ((v (@value obj))
+         (l (@left obj))
+         (r (@right obj))
          (c (compare elem v))
-         (col (color obj)))
+         (col (@color obj)))
     (cond
       ((= c 0) (balance (take-out-aux obj)))
       ((< c 0) (balance
-                (make-instance 'rb-tree
-                               :color col
-                               :value v
-                               :left (take-out elem l)
-                               :right r)))
+                (<rb-tree> :color col
+                           :value v
+                           :left (take-out elem l)
+                           :right r)))
       ((> c 0) (balance
                 (make-instance 'rb-tree
                                :color col
@@ -197,11 +186,11 @@
   "Returns a red-black tree collection consisting of function arguments as elements."
   (reduce (lambda (x y) (concat y x))
           rest
-          :initial-value (make-instance 'rb-tree-empty)))
+          :initial-value (<rb-tree-empty>)))
 
 (defmethod head ((obj rb-tree))
-  (let ((v (value obj))
-        (l (left obj)))
+  (let ((v (@value obj))
+        (l (@left obj)))
     (cond
       ((nil? l) v)
       (t (head l)))))

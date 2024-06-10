@@ -32,7 +32,7 @@
 
 (defun force-aux (thunk)
   "Auxiliary function for force"
-  (with-lock-held ((lock thunk))
+  (with-lock-held ((@lock thunk))
     (cond
       ((realized? thunk) (value thunk))
       (t (let ((result (multiple-value-list (funcall (@form thunk)))))
