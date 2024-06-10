@@ -23,37 +23,35 @@
 
 (defun make-queue (obj)
   "auxilliary function for updating queue in each step"
-  (if (not (nil? (left obj)))
-      (tail (left obj)))
+  (if (not (nil? (@left obj)))
+      (tail (@left obj)))
   (cond
-    ((<= (right-size obj) (left-size obj)) obj)
-    (t (make-instance 'lazy-queue
-                      :left (rot (left obj) (right obj) (lazy nil))
-                      :right (lazy nil)
-                      :left-size (+ (left-size obj) (right-size obj))
-                      :right-size 0))))
+    ((<= (@right-size obj) (@left-size obj)) obj)
+    (t (<lazy-queue> :left (rot (@left obj) (@right obj) (lazy nil))
+                     :right (lazy nil)
+                     :left-size (+ (@left-size obj) (@right-size obj))
+                     :right-size 0))))
 
 (defmethod concat (elem (obj lazy-queue))
-  (make-queue (make-instance 'lazy-queue
-                             :left (left obj)
-                             :right (concat elem (right obj))
-                             :left-size (left-size obj)
-                             :right-size (+ 1 (right-size obj)))))
+  (make-queue (<lazy-queue> :left (@left obj)
+                            :right (concat elem (@right obj))
+                            :left-size (@left-size obj)
+                            :right-size (+ 1 (@right-size obj)))))
 
 (defmethod tail ((obj lazy-queue))
   (make-queue (make-instance 'lazy-queue
-                             :left (tail (left obj))
-                             :right (right obj)
-                             :left-size (- (left-size obj) 1)
-                             :right-size (right-size obj))))
+                             :left (tail (@left obj))
+                             :right (@right obj)
+                             :left-size (- (@left-size obj) 1)
+                             :right-size (@right-size obj))))
 
 (defmethod head ((obj lazy-queue))
-  (head (left obj)))
+  (head (@left obj)))
 
 (defmethod nil? ((obj lazy-queue))
   (and
-   (<= (left-size obj) 0)
-   (<= (right-size obj) 0)))
+   (<= (@left-size obj) 0)
+   (<= (@right-size obj) 0)))
 
 (defun lazy-queue (&rest rest)
   "Returns a queue collection consisting of function arguments as elements."

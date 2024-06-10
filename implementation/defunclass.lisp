@@ -21,7 +21,7 @@
 (defun make-slot-name-pairs (slots)
   "produces flat list of slot-name-pairs"
   (cond
-    ((null slots))
+    ((null slots) '())
     (t (let* ((result (make-slot-name-pair (first slots)))
               (init (first result))
               (var (second result)))

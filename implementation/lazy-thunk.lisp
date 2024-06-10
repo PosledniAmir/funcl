@@ -9,12 +9,12 @@
   ((form
     :initarg :form
     :initform (error "you did not provide a value for slot from")
-    :reader form)
+    :reader @form)
    (value
     :accessor value)
    (lock
     :initform (make-lock)
-    :reader lock))
+    :reader @lock))
   (:documentation "A class representing lazy evaluation"))
 
 (defmethod realized? ((obj thunk))
@@ -35,7 +35,7 @@
   (with-lock-held ((lock thunk))
     (cond
       ((realized? thunk) (value thunk))
-      (t (let ((result (multiple-value-list (funcall (form thunk)))))
+      (t (let ((result (multiple-value-list (funcall (@form thunk)))))
            (setf (value thunk) result)
            (values-list result))))))
 
