@@ -137,3 +137,47 @@
       ((= c 0) (values v t))
       ((< c 0) (look-for elem l))
       ((> c 0) (look-for elem r)))))
+
+(defgeneric take-out-aux (obj)
+  (:documentation "Aux method for taking out"))
+
+(defmethod take-out-aux ((obj lazy-tree-empty))
+  obj)
+
+(defmethod take-out-aux ((obj lazy-tree))
+  (let* ((l (@left obj))
+         (r (@right obj))
+         (c (@count obj)))
+    (cond
+      ((not (nil? l)) (<lazy-tree> :count (- c 1)
+                                   :value (@value l)
+                                   :left (take-out-aux l)
+                                   :right r))
+      ((not (nil? r)) (<lazy-tree> :count (- c 1)
+                                   :left l
+                                   :right (take-out-aux r)))
+      (t (<lazy-tree-empty>)))))
+
+(defmethod take-out (elem (obj lazy-tree-empty))
+  obj)
+
+(defmethod take-out (elem (obj lazy-tree))
+  (let* ((v (@value obj))
+         (l (@left obj))
+         (r (@right obj))
+         (c (@count obj)))
+    (cond
+      ((= c 0) (balance (take-out-aux obj)))
+      ((< c 0) (balance (<lazy-tree> :count c
+                                     :value v
+                                     :left (take-out elem l)
+                                     :right r)))
+      ((> c 0) (balance (<lazy-tree> :count c
+                                     :value v
+                                     :left l
+                                     :right (take-out elem r)))))))
+
+(defun lazy-tree (&rest rest)
+  (reduce (lambda (x y) (concat y x))
+          rest
+          :initial-value (<lazy-tree-empty>)))
