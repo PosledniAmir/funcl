@@ -45,4 +45,7 @@
   (:documentation "Tells whether the elements are equal."))
 
 (defgeneric to-list (collection)
-  (:documentation "Casts collection to a list"))
+  (:documentation "Casts collection to a list."))
+
+(defgeneric join (a b)
+  (:documentation "Merges collections a and b."))
