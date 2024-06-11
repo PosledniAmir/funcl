@@ -94,7 +94,7 @@
 (defun balance (obj)
   (cond
     ((balanced? obj) obj)
-    (t (rebuld obj))))
+    (t (rebuild obj))))
 
 (defgeneric concat-aux (element obj)
   (:documentation "auxiliary method for concat"))
@@ -106,17 +106,17 @@
   (let* ((v (@value obj))
          (l (@left obj))
          (r (@right obj))
-         (c (compare elem v)))
+         (c (compare element v)))
     (cond
       ((= c 0) obj)
       ((< c 0) (balance (<lazy-tree> :count (+ c 1)
                                      :value v
-                                     :left (concat-aux elem l)
+                                     :left (concat-aux element l)
                                      :right r)))
       ((> c 0) (balance (<lazy-tree> :count (+ c 1)
                                      :value v
                                      :left l
-                                     :right (concat-aux eleme r)))))))
+                                     :right (concat-aux element r)))))))
 
 (defmethod concat (element (obj lazy-tree-empty))
   (<lazy-tree> :count 1
@@ -125,10 +125,10 @@
 (defmethod concat (element (obj lazy-tree))
   (concat-aux element obj))
 
-(defmethod look-for (elem (obj rb-tree-empty))
+(defmethod look-for (elem (obj lazy-tree-empty))
   (values nil nil))
 
-(defmethod look-for (elem (obj rb-tree))
+(defmethod look-for (elem (obj lazy-tree))
   (let* ((v (@value obj))
          (l (@left obj))
          (r (@right obj))
