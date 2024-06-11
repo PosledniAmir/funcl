@@ -1,6 +1,6 @@
 (defpackage :lazy-tree
   (:use :cl :defunclass :generics)
-  (:export :rb-tree))
+  (:export :lazy-tree))
 
 (in-package :lazy-tree)
 
@@ -61,6 +61,79 @@
       ((nil? l) v)
       (t (head l)))))
 
+(defgeneric balanced? (obj)
+  (:documentation "Checks whether the lazy tree is balanced"))
+
+(defgeneric get-count (obj)
+  (:documentation "Gets count of left subtree"))
+
+(defmethod get-count ((obj lazy-tree-empty))
+  0)
+
+(defmethod get-count ((obj lazy-tree))
+  (@count obj))
+
+(defmethod balanced? ((obj lazy-tree-empty))
+  t)
+
+(defmethod balanced? ((obj lazy-tree))
+  (let ((pc (@count obj))
+        (lc (get-count (@left obj)))
+        (rc (get-count (@right obj))))
+    (cond
+      ((<= pc (* lc 2)) t)
+      ((<= pc (* rc 2)) t)
+      (t nil))))
+
+(defun rebuild (tree)
+  (let* ((lst (to-list tree))
+         (n (length lst))
+         (result (multiple-value-list (from-sorted n lst))))
+    (first result)))
+
+(defun balance (obj)
+  (cond
+    ((balanced? obj) obj)
+    (t (rebuld obj))))
+
+(defgeneric concat-aux (element obj)
+  (:documentation "auxiliary method for concat"))
+
+(defmethod concat-aux (element (obj lazy-tree-empty))
+  (<lazy-tree> :count 1 :value element))
+
+(defmethod concat-aux (element (obj lazy-tree))
+  (let* ((v (@value obj))
+         (l (@left obj))
+         (r (@right obj))
+         (c (compare elem v)))
+    (cond
+      ((= c 0) obj)
+      ((< c 0) (balance (<lazy-tree> :count (+ c 1)
+                                     :value v
+                                     :left (concat-aux elem l)
+                                     :right r)))
+      ((> c 0) (balance (<lazy-tree> :count (+ c 1)
+                                     :value v
+                                     :left l
+                                     :right (concat-aux eleme r)))))))
+
 (defmethod concat (element (obj lazy-tree-empty))
   (<lazy-tree> :count 1
                :value element))
+
+(defmethod concat (element (obj lazy-tree))
+  (concat-aux element obj))
+
+(defmethod look-for (elem (obj rb-tree-empty))
+  (values nil nil))
+
+(defmethod look-for (elem (obj rb-tree))
+  (let* ((v (@value obj))
+         (l (@left obj))
+         (r (@right obj))
+         (c (compare elem v)))
+    (cond
+      ((= c 0) (values v t))
+      ((< c 0) (look-for elem l))
+      ((> c 0) (look-for elem r)))))

@@ -9,7 +9,8 @@
                (:file "implementation/defunclass" :depends-on ("implementation/generics" "implementation/generics-impl"))
                (:file "implementation/lazy-queue" :depends-on ("implementation/lazy-thunk" "implementation/defunclass" "implementation/generics" "implementation/generics-impl"))
                (:file "implementation/rb-tree" :depends-on ("implementation/defunclass" "implementation/generics" "implementation/generics-impl"))
-               (:file "implementation/trie" :depends-on ("implementation/defunclass" "implementation/generics")))
+               (:file "implementation/trie" :depends-on ("implementation/defunclass" "implementation/generics"))
+               (:file "implementation/lazy-tree" :depends-on ("implementation/defunclass" "implementation/generics" "implementation/generics-impl")))
   :in-order-to ((test-op (test-op "funcl/tests"))))
 
 (defsystem "funcl/tests"
