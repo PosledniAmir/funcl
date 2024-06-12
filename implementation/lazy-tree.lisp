@@ -178,6 +178,7 @@
                                      :right (take-out elem r)))))))
 
 (defun lazy-tree (&rest rest)
+  "Returns a lazy tree, collection consisting of function arguments as elements."
   (reduce (lambda (x y) (concat y x))
           rest
           :initial-value (<lazy-tree-empty>)))
