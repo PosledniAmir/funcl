@@ -81,8 +81,8 @@
         (lc (get-count (@left obj)))
         (rc (get-count (@right obj))))
     (cond
-      ((<= pc (* lc 2)) t)
-      ((<= pc (* rc 2)) t)
+      ((<= pc (* lc 3)) t)
+      ((<= pc (* rc 3)) t)
       (t nil))))
 
 (defun rebuild (tree)
@@ -106,14 +106,15 @@
   (let* ((v (@value obj))
          (l (@left obj))
          (r (@right obj))
+         (count (@count obj))
          (c (compare element v)))
     (cond
       ((= c 0) obj)
-      ((< c 0) (balance (<lazy-tree> :count (+ c 1)
+      ((< c 0) (balance (<lazy-tree> :count (+ count 1)
                                      :value v
                                      :left (concat-aux element l)
                                      :right r)))
-      ((> c 0) (balance (<lazy-tree> :count (+ c 1)
+      ((> c 0) (balance (<lazy-tree> :count (+ count 1)
                                      :value v
                                      :left l
                                      :right (concat-aux element r)))))))
