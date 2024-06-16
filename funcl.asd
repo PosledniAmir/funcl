@@ -4,6 +4,7 @@
   :depends-on ("bordeaux-threads"
                "trivia")
   :components ((:file "implementation/generics")
+               (:file "implementation/arrow-macros")
                (:file "implementation/generics-impl" :depends-on ("implementation/generics"))
                (:file "implementation/lazy-thunk" :depends-on ("implementation/generics" "implementation/generics-impl"))
                (:file "implementation/defunclass" :depends-on ("implementation/generics" "implementation/generics-impl"))
@@ -16,6 +17,7 @@
 (defsystem "funcl/tests"
   :depends-on ("funcl" "fiveam")
   :components ((:file "tests/funcl-suite")
+               (:file "tests/arrow-macros-tests")
                (:file "tests/lazy-thunk-tests")
                (:file "tests/defunclass-tests")
                (:file "tests/lazy-queue-tests")
