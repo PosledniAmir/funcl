@@ -102,6 +102,17 @@
     ((balanced? obj) obj)
     (t (rebuild obj))))
 
+(defun recalculate-count (tree)
+  (let ((l (@left tree))
+        (r (@right tree))
+        (v (@value tree)))
+    (<lazy-tree> :count (+ (get-count l)
+                           (get-count r)
+                           1)
+                 :value v
+                 :left l
+                 :right r)))
+
 (defgeneric concat-aux (element obj)
   (:documentation "auxiliary method for concat"))
 
@@ -112,18 +123,21 @@
   (let* ((v (@value obj))
          (l (@left obj))
          (r (@right obj))
-         (count (@count obj))
          (c (compare element v)))
     (cond
       ((= c 0) obj)
-      ((< c 0) (balance (<lazy-tree> :count (+ count 1)
-                                     :value v
-                                     :left (concat-aux element l)
-                                     :right r)))
-      ((> c 0) (balance (<lazy-tree> :count (+ count 1)
-                                     :value v
-                                     :left l
-                                     :right (concat-aux element r)))))))
+      ((< c 0) (balance
+                (recalculate-count
+                 (<lazy-tree> :count 0
+                              :value v
+                              :left (concat-aux element l)
+                              :right r))))
+      ((> c 0) (balance
+                (recalculate-count
+                 (<lazy-tree> :count 0
+                              :value v
+                              :left l
+                              :right (concat-aux element r))))))))
 
 (defmethod concat (element (obj lazy-tree-empty))
   (<lazy-tree> :count 1
@@ -161,6 +175,7 @@
                                    :left (take-out-aux l)
                                    :right r))
       ((not (nil? r)) (<lazy-tree> :count (- c 1)
+                                   :value (@value r)
                                    :left l
                                    :right (take-out-aux r)))
       (t (<lazy-tree-empty>)))))
@@ -172,17 +187,25 @@
   (let* ((v (@value obj))
          (l (@left obj))
          (r (@right obj))
-         (c (@count obj)))
+         (c (compare elem v)))
     (cond
       ((= c 0) (balance (take-out-aux obj)))
-      ((< c 0) (balance (<lazy-tree> :count c
-                                     :value v
-                                     :left (take-out elem l)
-                                     :right r)))
-      ((> c 0) (balance (<lazy-tree> :count c
-                                     :value v
-                                     :left l
-                                     :right (take-out elem r)))))))
+      ((< c 0) (balance
+                (recalculate-count
+                 (<lazy-tree> :count 0
+                              :value v
+                              :left (take-out elem l)
+                              :right r))))
+      ((> c 0) (balance
+                (recalculate-count
+                 (<lazy-tree> :count 0
+                              :value v
+                              :left l
+                              :right (take-out elem r))))))))
+
+(defmethod tail ((obj lazy-tree))
+  (let ((v (head obj)))
+    (take-out v obj)))
 
 (defun lazy-tree (&rest rest)
   "Returns a lazy tree, collection consisting of function arguments as elements."
