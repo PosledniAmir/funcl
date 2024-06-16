@@ -36,23 +36,29 @@
                  (rest list)
                  (cons (first list) acc)))))
 
+(defun get-sizes (size)
+  (let ((result (multiple-value-list (truncate size 2))))
+    (values (- (+ (first result) (second result)) 1)
+            (first result))))
+
 (defun from-sorted (size list)
   (cond
     ((<= size 0) (values (<lazy-tree-empty>) list))
-    (t (let* ((result (multiple-value-list (truncate size 2)))
-              (left-size (- (+ (first result) (second result)) 1))
-              (right-size (first result))
-              (left-result (from-sorted left-size list))
-              (left-tree (first left-result))
-              (value (second (first left-result)))
-              (right-result (from-sorted right-size (second (rest left-result))))
-              (right-tree (first right-result))
-              (result-list (second right-result)))
+    (t (let* ((result (multiple-value-list (get-sizes size)))
+              (left-size (first result))
+              (right-size (second result))
+              (left-pair (multiple-value-list (from-sorted left-size list)))
+              (left-tree (first left-pair))
+              (value (first (second left-pair)))
+              (left-list (rest (second left-pair)))
+              (right-pair (multiple-value-list (from-sorted right-size left-list)))
+              (right-tree (first right-pair))
+              (right-list (second right-pair)))
          (values (<lazy-tree> :count size
                               :value value
                               :left left-tree
                               :right right-tree)
-                 result-list)))))
+                 right-list)))))
 
 (defmethod head ((obj lazy-tree))
   (let ((v (@value obj))
@@ -77,12 +83,12 @@
   t)
 
 (defmethod balanced? ((obj lazy-tree))
-  (let ((pc (@count obj))
+  (let ((pc (* (/ 2 3) (@count obj)))
         (lc (get-count (@left obj)))
         (rc (get-count (@right obj))))
     (cond
-      ((<= pc (* lc 3)) t)
-      ((<= pc (* rc 3)) t)
+      ((<= pc lc) t)
+      ((<= pc rc) t)
       (t nil))))
 
 (defun rebuild (tree)
