@@ -5,7 +5,7 @@
 (in-package :arrow-macros)
 
 (defmacro -> (expression &body body)
-  "Basic arrow macro (-> 5 (+ 3 2) (* 2)) creates (* (+ 5 3 2) 2)"
+  "basic arrow macro (-> 5 (+ 3 2) (* 2)) creates (* (+ 5 3 2) 2)"
   (let ((transformed (reduce
                       (lambda (acc form)
                         (cond

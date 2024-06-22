@@ -92,17 +92,20 @@
       (t nil))))
 
 (defun rebuild (tree)
+  "auxilliary function that rebuilds the tree"
   (let* ((lst (to-list tree))
          (n (length lst))
          (result (multiple-value-list (from-sorted n lst))))
     (first result)))
 
 (defun balance (obj)
+  "if necessary it rebuilds the tree"
   (cond
     ((balanced? obj) obj)
     (t (rebuild obj))))
 
 (defun recalculate-count (tree)
+  "fixes cound by checking the children"
   (let ((l (@left tree))
         (r (@right tree))
         (v (@value tree)))
