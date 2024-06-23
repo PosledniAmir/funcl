@@ -70,22 +70,16 @@
 (defgeneric balanced? (obj)
   (:documentation "Checks whether the lazy tree is balanced"))
 
-(defgeneric get-count (obj)
-  (:documentation "Gets count of left subtree"))
-
-(defmethod get-count ((obj lazy-tree-empty))
+(defmethod @count ((obj lazy-tree-empty))
   0)
-
-(defmethod get-count ((obj lazy-tree))
-  (@count obj))
 
 (defmethod balanced? ((obj lazy-tree-empty))
   t)
 
 (defmethod balanced? ((obj lazy-tree))
   (let ((pc (* (/ 2 3) (@count obj)))
-        (lc (get-count (@left obj)))
-        (rc (get-count (@right obj))))
+        (lc (@count (@left obj)))
+        (rc (@count (@right obj))))
     (cond
       ((<= pc lc) t)
       ((<= pc rc) t)
@@ -109,8 +103,8 @@
   (let ((l (@left tree))
         (r (@right tree))
         (v (@value tree)))
-    (<lazy-tree> :count (+ (get-count l)
-                           (get-count r)
+    (<lazy-tree> :count (+ (@count l)
+                           (@count r)
                            1)
                  :value v
                  :left l
