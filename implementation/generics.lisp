@@ -1,16 +1,7 @@
 (defpackage :generics
   (:use :cl)
-  (:export :realized?
-           :force
-           :head
-           :tail
-           :concat
-           :nil?
-           :look-for
-           :take-out
-           :compare
-           :equal?
-           :to-list))
+  (:export :realized? :force :head :tail :concat :nil? :look-for
+   :take-out :compare :equal? :to-list :get-count))
 
 (in-package :generics)
 
