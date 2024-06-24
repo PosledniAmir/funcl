@@ -12,7 +12,7 @@ Macro that creates an imutable class.
 
 Example: `(defunclass test () ((a 0) (b nil)) (:documentation "test"))`
 
-Creates a new class with constructor <test> (&key (:a 0) (:b nil)), with readers @a, @b.
+Creates a new class with constructor `<test> (&key (:a 0) (:b nil))`, with readers `@a`, `@b`.
 
 ### Generic interface
 
