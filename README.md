@@ -4,6 +4,15 @@
 
 ## Documentation
 
+### Defunclass
+
+Macro that creates an imutable class.
+
+#### defunclass (name parents slots &body)
+
+Example: `(defunclass test () ((a 0) (b nil)) (:documentation "test"))`
+Creates a new class with constructor <test> (&key (:a 0) (:b nil)), with readers @a, @b.
+
 ### Generic interface
 
 Collections implemented in funcl use common interface.
