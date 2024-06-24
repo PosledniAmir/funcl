@@ -49,3 +49,6 @@
 
 (defgeneric join (a b)
   (:documentation "Merges collections a and b."))
+
+(defgeneric get-count (collection)
+  (:documentation "Gets number of elements in the collection."))

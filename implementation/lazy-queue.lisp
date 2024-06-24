@@ -70,3 +70,6 @@
     ((nil? obj) (make-instance 'lazy-queue))
     ((equal? element (head obj)) (tail obj))
     (t (concat (head obj) (take-out element (tail obj))))))
+
+(defmethod get-count ((obj lazy-queue))
+  (+ (@right-size obj) (@left-size obj)))

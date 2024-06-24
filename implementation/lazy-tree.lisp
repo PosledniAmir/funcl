@@ -209,3 +209,9 @@
   (reduce (lambda (x y) (concat y x))
           rest
           :initial-value (<lazy-tree-empty>)))
+
+(defmethod get-count ((obj lazy-tree-empty))
+  (@count obj))
+
+(defmethod get-count ((obj lazy-tree))
+  (@count obj))

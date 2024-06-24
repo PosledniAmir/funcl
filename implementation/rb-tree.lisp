@@ -198,3 +198,10 @@
 (defmethod tail ((obj rb-tree))
   (let ((v (head obj)))
     (take-out v obj)))
+
+(defmethod get-count ((obj rb-tree-empty))
+  0)
+
+(defmethod get-count ((obj rb-tree))
+  (+ (get-count (@left obj))
+     (get-count (@right obj))))

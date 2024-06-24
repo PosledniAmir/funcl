@@ -73,3 +73,8 @@
     ((nil? obj) (lazy nil))
     ((equal? element (head obj)) (tail obj))
     (t (concat (head obj) (take-out element (tail obj))))))
+
+(defmethod get-count ((obj thunk))
+  (cond
+    ((nil? obj) 0)
+    (t (+ 1 (get-count (tail obj))))))

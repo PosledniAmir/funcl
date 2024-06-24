@@ -169,3 +169,12 @@ if updated element meets remove predicate then it is removed from the list"
 
 (defmethod take-out (elem (obj trie))
   (nil-to-empty (car (separate-from (list obj) (make-string-nodes elem nil)))))
+
+(defmethod get-count ((obj trie-empty))
+  0)
+
+(defmethod get-count ((obj trie))
+  (let ((result (mapcar #'get-count (@next obj))))
+    (cond
+      ((contains-value? obj) (reduce #'+ result :initial-value 1))
+      (t (reduce #'+ result :initial-value 0)))))
