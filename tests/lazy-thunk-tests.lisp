@@ -43,3 +43,8 @@
          (b (concat (+ 1 0) a))
          (c (concat (+ 2 0) b)))
     (is (null (head (tail (tail c)))))))
+
+(test count-test
+      (let ((result (lazy-stream 20 17 16 8 12 2 5 11 10 6 1 15 7 18 13
+                                 14 9 4 19 3)))
+        (is (= (get-count result) 20))))

@@ -204,4 +204,5 @@
 
 (defmethod get-count ((obj rb-tree))
   (+ (get-count (@left obj))
-     (get-count (@right obj))))
+     (get-count (@right obj))
+     1))
