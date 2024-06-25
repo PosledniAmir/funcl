@@ -4,6 +4,10 @@
 
 (in-package :arrow-macros)
 
+(defun function? (list)
+  (and (listp list)
+       (eq 'function (first list))))
+
 (defun funcall? (list)
   (and (listp list)
        (eq 'funcall (first list))))
@@ -14,8 +18,9 @@
                       (lambda (acc form)
                         (cond
                           ((funcall? form) `(,(first form) ,(second form) ,acc ,@(rest (rest form))))
+                          ((function? form) `(funcall ,form ,acc))
                           ((listp form) `(,(first form) ,acc ,@(rest form)))
-                          (t `(,form ,acc))))
+                          (t `(funcall ,form ,acc))))
                       body
                       :initial-value expression)))
     transformed))
