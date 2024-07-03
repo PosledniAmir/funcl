@@ -73,3 +73,8 @@
 
 (defmethod get-count ((obj lazy-queue))
   (+ (@right-size obj) (@left-size obj)))
+
+(defmethod to-list ((collection lazy-queue))
+  (cond
+    ((nil? collection) '())
+    (t (cons (head collection) (to-list (tail collection))))))

@@ -72,7 +72,7 @@
         (look-for "three" result)
         (look-for "four" result))))
 
-(test count-test
+(test count-method
       (let ((result (trie (list "twenty" 20)
                           (list "seventeen" 17)
                           (list "sixteen" 16)

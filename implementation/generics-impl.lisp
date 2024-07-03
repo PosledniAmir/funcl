@@ -61,3 +61,16 @@
 
 (defmethod to-list ((collection cons))
   collection)
+
+(defmethod equal? ((first cons) (second cons))
+  (cond
+    ((and (null first) (null second)) t)
+    ((null first) nil)
+    ((null second) nil)
+    (t (and (equal? (first first)
+                    (first second))
+            (equal? (rest first)
+                    (rest second))))))
+
+(defmethod equal? ((first number) (second number))
+  (= first second))

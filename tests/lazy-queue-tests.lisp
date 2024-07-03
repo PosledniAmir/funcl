@@ -29,7 +29,11 @@
   (let ((result (lazy-queue)))
     (is (nil? result))))
 
-(test count-test
+(test count-method
       (let ((result (lazy-queue 20 17 16 8 12 2 5 11 10 6 1 15 7 18 13
                                 14 9 4 19 3)))
         (is (= (get-count result) 20))))
+
+(test to-list-method
+  (let ((result (to-list (lazy-queue 5 3 4 1 2))))
+    (is (equal? result (list 5 3 4 1 2)))))

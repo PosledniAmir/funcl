@@ -47,7 +47,7 @@
         (look-for 3 result)
         (look-for 4 result))))
 
-(test count-test
+(test count-method
       (let ((result (lazy-tree 20 17 16 8 12 2 5 11 10 6 1 15 7 18 13
                                14 9 4 19 3)))
         (is (= (get-count result) 20))))
