@@ -78,3 +78,9 @@
   (cond
     ((nil? obj) 0)
     (t (+ 1 (get-count (tail obj))))))
+
+(defmethod to-list ((collection thunk))
+  (cond
+    ((nil? collection) '())
+    (t (cons (head collection)
+             (to-list (tail collection))))))

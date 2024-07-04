@@ -215,3 +215,20 @@
 
 (defmethod get-count ((obj lazy-tree))
   (@count obj))
+
+(defgeneric to-list-aux (collection acc)
+  (:documentation "Auxilliary function for to-list for lazy-tree"))
+
+(defmethod to-list-aux ((collection lazy-tree-empty) acc)
+  acc)
+
+(defmethod to-list-aux ((collection lazy-tree) acc)
+  (to-list-aux (@left collection)
+               (cons (@value collection)
+                     (to-list-aux (@right collection) acc))))
+
+(defmethod to-list ((collection lazy-tree-empty))
+  '())
+
+(defmethod to-list ((collection lazy-tree))
+  (to-list-aux collection '()))
