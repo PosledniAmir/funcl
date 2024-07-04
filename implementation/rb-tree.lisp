@@ -206,3 +206,20 @@
   (+ (get-count (@left obj))
      (get-count (@right obj))
      1))
+
+(defgeneric to-list-aux (collection acc)
+  (:documentation "Auxilliary functionfor to-list for rb-tree"))
+
+(defmethod to-list-aux ((collection rb-tree-empty) acc)
+  acc)
+
+(defmethod to-list-aux ((collection rb-tree) acc)
+  (to-list-aux (@left collection)
+               (cons (@value collection)
+                     (to-list-aux (@right collection) acc))))
+
+(defmethod to-list ((collection rb-tree-empty))
+  '())
+
+(defmethod to-list ((collection rb-tree))
+  (to-list-aux collection '()))
