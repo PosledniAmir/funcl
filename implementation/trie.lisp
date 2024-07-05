@@ -12,7 +12,7 @@
     ((letter (error "slot letter must be set in a trie"))
      (value (make-instance 'no-value))
      (next nil))
-  (:documentation "node with no value"))
+  (:documentation "Trie node."))
 
 (defgeneric contains-value? (obj)
   (:documentation "aux function for checking whether node is non-empty"))
@@ -29,28 +29,47 @@
 (defmethod nil? ((obj trie-empty))
   t)
 
-(defmethod head ((obj trie))
-  (cond
-    ((contains-value? obj) (@value obj))
-    (t (head (car (@next obj))))))
-
 (defun cond-cons (elt lst pred)
   "conditional cons"
   (cond
     ((funcall pred elt) (cons elt lst))
     (t lst)))
 
+(defgeneric head-aux (obj acc)
+  (:documentation "Auxilliary function for implementing head on trie."))
+
+(defmethod head-aux ((obj trie) acc)
+  (let ((nacc (if (eq 'root (@letter obj))
+                  '()
+                  (cons (@letter obj) acc))))
+    (cond
+      ((contains-value? obj) (list (concatenate 'string
+                                                (reverse nacc))
+                                   (@value obj)))
+      (t (head-aux (first (@next obj)) nacc)))))
+
+(defmethod head ((obj trie))
+  (head-aux obj '()))
+
+(defun empty-fix (trie)
+  (if (and (null (@next trie))
+           (eq (@letter trie) 'root))
+      (<trie-empty>)
+      trie))
+
 (defmethod tail ((obj trie))
   (cond
     ((contains-value? obj) (<trie> :letter (@letter obj)
                                    :value (<no-value>)
                                    :next (@next obj)))
-    (t (<trie> :letter (@letter obj)
-               :value (@value obj)
-               :next (cond-cons (tail (car (@next obj)))
-                                (cdr (@next obj))
-                                (lambda (x) (or (contains-value? x)
-                                                (not (null (@next x))))))))))
+    (t (empty-fix
+        (<trie> :letter (@letter obj)
+                :value (@value obj)
+                :next (cond-cons
+                       (tail (car (@next obj)))
+                       (cdr (@next obj))
+                       (lambda (x) (or (contains-value? x)
+                                       (not (null (@next x)))))))))))
 
 (defun cons-char-trie (char trie)
   (<trie> :letter char
@@ -190,3 +209,13 @@ if updated element meets remove predicate then it is removed from the list"
     (cond
       ((contains-value? obj) (reduce #'+ result :initial-value 1))
       (t (reduce #'+ result :initial-value 0)))))
+
+(defmethod to-list ((collection trie-empty))
+  '())
+
+(defmethod to-list ((collection trie))
+  (cond
+    ((nil? collection) '())
+    (t (cons (head collection)
+             (to-list (tail collection))))))
+

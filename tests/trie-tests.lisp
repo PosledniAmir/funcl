@@ -94,3 +94,15 @@
                           (list "nineteen" 19)
                           (list "three" 3))))
         (is (= (get-count result) 20))))
+
+(test to-list-method
+  (let ((result (to-list (trie (list "five" 5)
+                               (list "three" 3)
+                               (list "four" 4)
+                               (list "one" 1)
+                               (list "two" 2)))))
+    (is (equal? result (list (list "five" 5)
+                             (list "four" 4)
+                             (list "three" 3)
+                             (list "two" 2)
+                             (list "one" 1))))))

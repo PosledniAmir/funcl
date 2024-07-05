@@ -74,3 +74,6 @@
 
 (defmethod equal? ((first number) (second number))
   (= first second))
+
+(defmethod equal? ((first string) (second string))
+  (string= first second))
