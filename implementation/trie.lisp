@@ -34,14 +34,6 @@
     ((contains-value? obj) (@value obj))
     (t (head (car (@next obj))))))
 
-(defun make-trie (letter value next)
-  "aux constructor for trie"
-  (<trie> :letter letter :value value :next next))
-
-(defun make-no-val ()
-  "aux constructor for no-value"
-  (make-instance 'no-value))
-
 (defun cond-cons (elt lst pred)
   "conditional cons"
   (cond
@@ -50,27 +42,35 @@
 
 (defmethod tail ((obj trie))
   (cond
-    ((contains-value? obj) (make-trie (@letter obj) (make-no-val) (@next obj)))
-    (t (make-trie (@letter obj)
-                  (@value obj)
-                  (cond-cons (tail (car (@next obj)))
-                             (cdr (@next obj))
-                             (lambda (x) (or (contains-value? x)
-                                             (not (null (@next x))))))))))
+    ((contains-value? obj) (<trie> :letter (@letter obj)
+                                   :value (<no-value>)
+                                   :next (@next obj)))
+    (t (<trie> :letter (@letter obj)
+               :value (@value obj)
+               :next (cond-cons (tail (car (@next obj)))
+                                (cdr (@next obj))
+                                (lambda (x) (or (contains-value? x)
+                                                (not (null (@next x))))))))))
 
 (defun cons-char-trie (char trie)
-  (make-trie char (make-no-val) (list trie)))
+  (<trie> :letter char
+          :value (<no-value>)
+          :next (list trie)))
 
 (defmethod make-string-nodes (text value)
   "creates trie containing text and value only"
   (let ((lst (reverse (to-list text))))
     (cond
-      ((null lst) (make-trie 'root value nil))
-      (t (make-trie 'root
-                    (make-no-val)
-                    (list (reduce (lambda (x y) (cons-char-trie y x))
-                                  (cdr lst)
-                                  :initial-value (make-trie (car lst) value nil))))))))
+      ((null lst) (<trie> :letter 'root
+                          :value value
+                          :next nil))
+      (t (<trie> :letter 'root
+                 :value (<no-value>)
+                 :next (list (reduce (lambda (x y) (cons-char-trie y x))
+                                     (cdr lst)
+                                     :initial-value (<trie> :letter (car lst)
+                                                            :value value
+                                                            :next nil))))))))
 
 (defun list-update-add (list predicate update add)
   "finds first element that evaluates predicate to t and updates is using update
@@ -90,8 +90,16 @@ if not successful it adds it using add function"
   (list-update-add list
                    (lambda (x) (equal? (@letter node) (@letter x)))
                    (lambda (x) (cond
-                                 ((null (@next node)) (make-trie (@letter x) (@value node) (@next x)))
-                                 (t (make-trie (@letter x) (@value x) (merge-in (@next x) (car (@next node)))))))
+                                 ((null (@next node))
+                                  (<trie> :letter (@letter x)
+                                          :value (@value node)
+                                          :next (@next x)))
+                                 (t
+                                  (<trie> :letter (@letter x)
+                                          :value (@value x)
+                                          :next (merge-in
+                                                 (@next x)
+                                                 (car (@next node)))))))
                    (lambda () node)))
 
 (defmethod concat (elem (obj trie-empty))
@@ -132,7 +140,7 @@ otherwise returns (values nil nil)"
   (values nil nil))
 
 (defmethod look-for (text (obj trie))
-  (find-in (list obj) (make-string-nodes text (make-no-val))))
+  (find-in (list obj) (make-string-nodes text (<no-value>))))
 
 (defun list-update-remove (lst pred update remove)
   "finds element in lst according to the predicate
@@ -153,8 +161,12 @@ if updated element meets remove predicate then it is removed from the list"
   (list-update-remove lst
                       (lambda (x) (equal? (@letter x) (@letter node)))
                       (lambda (x) (cond
-                                    ((null (@next node)) (make-trie (@letter x) (make-no-val) (@next x)))
-                                    (t (make-trie (@letter x) (@value x) (separate-from (@next x) (car (@next node)))))))
+                                    ((null (@next node)) (<trie> :letter (@letter x)
+                                                                 :value (<no-value>)
+                                                                 :next (@next x)))
+                                    (t (<trie> :letter (@letter x)
+                                               :value (@value x)
+                                               :next (separate-from (@next x) (car (@next node)))))))
                       (lambda (x) (and (null (@next x))
                                        (not (contains-value? x))))))
 
