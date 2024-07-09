@@ -78,3 +78,9 @@
   (cond
     ((nil? collection) '())
     (t (cons (head collection) (to-list (tail collection))))))
+
+(defmethod transform ((collection lazy-queue) function)
+  (cond
+    ((nil? collection) (make-instance 'lazy-queue))
+    (t (concat (apply function (head collection))
+               (transform (tail collection) function)))))

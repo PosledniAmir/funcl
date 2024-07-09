@@ -1,7 +1,7 @@
 (defpackage :generics
   (:use :cl)
   (:export :realized? :force :head :tail :concat :nil? :look-for
-   :take-out :compare :equal? :to-list :get-count))
+   :take-out :compare :equal? :to-list :get-count :transform))
 
 (in-package :generics)
 
@@ -43,3 +43,6 @@
 
 (defgeneric get-count (collection)
   (:documentation "Gets number of elements in the collection."))
+
+(defgeneric transform (collection function)
+  (:documentation "Applies function on every item on the collection and returns the same collection with the modified elements."))
