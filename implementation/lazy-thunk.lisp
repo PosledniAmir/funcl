@@ -84,3 +84,9 @@
     ((nil? collection) '())
     (t (cons (head collection)
              (to-list (tail collection))))))
+
+(defmethod transform ((collection thunk) function)
+  (cond
+    ((nil? collection) (lazy nil))
+    (t (lazy (cons (funcall function (head collection))
+                   (transform (tail collection) function))))))

@@ -52,3 +52,7 @@
 (test to-list-method
   (let ((result (to-list (lazy-stream 5 3 4 1 2))))
     (is (equal? result (list 5 3 4 1 2)))))
+
+(test transform-method
+  (let ((result (transform (lazy-stream 5 3 4 1 2) (lambda (x) (+ x 1)))))
+    (is (equal? (to-list result) (list 6 4 5 2 3)))))

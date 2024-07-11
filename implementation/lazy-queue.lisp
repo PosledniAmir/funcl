@@ -82,5 +82,5 @@
 (defmethod transform ((collection lazy-queue) function)
   (cond
     ((nil? collection) (make-instance 'lazy-queue))
-    (t (concat (apply function (head collection))
+    (t (concat (funcall function (head collection))
                (transform (tail collection) function)))))

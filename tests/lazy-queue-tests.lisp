@@ -37,3 +37,7 @@
 (test to-list-method
   (let ((result (to-list (lazy-queue 5 3 4 1 2))))
     (is (equal? result (list 5 3 4 1 2)))))
+
+(test transform-method
+  (let ((result (transform (lazy-queue 5 3 4 1 2) (lambda (x) (+ 1 x)))))
+    (is (equal? (to-list result) (list 3 2 5 4 6)))))
