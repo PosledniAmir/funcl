@@ -219,7 +219,7 @@ if updated element meets remove predicate then it is removed from the list"
     (t (cons (head collection)
              (to-list (tail collection))))))
 
-(defmethod transform ((collection trie-epty) function)
+(defmethod transform ((collection trie-empty) function)
   collection)
 
 (defmethod transform ((collection trie) function)
