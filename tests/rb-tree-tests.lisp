@@ -61,3 +61,7 @@
 (test to-list-method
   (let ((result (to-list (rb-tree 5 3 4 1 2))))
     (is (equal? result (list 1 2 3 4  5)))))
+
+(test transform-method
+  (let ((result (transform (rb-tree 5 3 4 1 2) (lambda (x) (+ x 1)))))
+    (is (equal? (to-list result) (list 2 3 4 5 6)))))
