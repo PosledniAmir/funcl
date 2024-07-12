@@ -223,3 +223,21 @@
 
 (defmethod to-list ((collection rb-tree))
   (to-list-aux collection '()))
+
+(defgeneric transform-aux (collection function acc)
+  (:documentation "Auxilliary function for transform method for rb-tree"))
+
+(defmethod transform-aux ((collection rb-tree-empty) function acc)
+  acc)
+
+(defmethod transform-aux ((collection rb-tree) function acc)
+  (transform-aux (@left collection)
+                 function
+                 (concat (funcall function (@value collection))
+                         (transform-aux (@right collection) function acc))))
+
+(defmethod transform ((collection rb-tree-empty) function)
+  collection)
+
+(defmethod transform ((collection rb-tree) function)
+  (transform-aux collection function (<rb-tree-empty>)))
