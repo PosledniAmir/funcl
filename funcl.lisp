@@ -2,7 +2,7 @@
   (:use :cl :generics :generics-impl :arrow-macros :lazy-thunk :defunclass :lazy-queue
         :rb-tree :lazy-tree :trie)
   (:import-from :generics :realized? :force :head :tail :concat :nil? :look-for :take-out
-   :compare :equal? :to-list :get-count)
+   :compare :equal? :to-list :get-count :transform :filter)
   (:import-from :arrow-macros :->)
   (:import-from :lazy-thunk :lazy :lazy-stream)
   (:import-from :defunclass :defunclass)

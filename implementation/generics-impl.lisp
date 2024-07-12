@@ -73,3 +73,9 @@
 
 (defmethod equal? ((first string) (second string))
   (string= first second))
+
+(defmethod compare ((first string) (second string))
+  (cond
+    ((string= first second) 0)
+    ((string< first second) -1)
+    ((string> first second) 1)))
