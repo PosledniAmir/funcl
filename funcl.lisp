@@ -12,4 +12,4 @@
   (:import-from :trie :trie)
   (:export :realized? :force :head :tail :concat :nil? :look-for :take-out :compare
    :equal? :to-list :-> :lazy :lazy-stream :defunclass :lazy-queue :rb-tree
-   :lazy-tree :trie :get-count))
+   :lazy-tree :trie :get-count :transform :filter))
