@@ -79,3 +79,9 @@
     ((string= first second) 0)
     ((string< first second) -1)
     ((string> first second) 1)))
+
+(defmethod compare ((first null) (second string))
+  -1)
+
+(defmethod compare ((first string) (second null))
+  1)
