@@ -56,3 +56,7 @@
 (test transform-method
   (let ((result (transform (lazy-stream 5 3 4 1 2) (lambda (x) (+ x 1)))))
     (is (equal? (to-list result) (list 6 4 5 2 3)))))
+
+(test filter-method
+  (let ((result (filter (lazy-stream 5 3 4 1 2) #'evenp)))
+    (is (equal? (to-list result) (list 4 2)))))

@@ -79,8 +79,28 @@
     ((nil? collection) '())
     (t (cons (head collection) (to-list (tail collection))))))
 
-(defmethod transform ((collection lazy-queue) function)
+(defun transform-aux (collection function acc)
   (cond
-    ((nil? collection) (make-instance 'lazy-queue))
-    (t (concat (funcall function (head collection))
-               (transform (tail collection) function)))))
+    ((nil? collection) acc)
+    (t (transform-aux (tail collection)
+                      function
+                      (concat (funcall function (head collection))
+                              acc)))))
+
+(defmethod transform ((collection lazy-queue) function)
+  (transform-aux collection function (make-instance 'lazy-queue)))
+
+(defmethod filter-aux (collection predicate acc)
+  (cond
+    ((nil? collection) acc)
+    (t (let ((take? (funcall predicate (head collection))))
+         (cond
+           (take? (filter-aux (tail collection)
+                              predicate
+                              (concat (head collection) acc)))
+           (t (filter-aux (tail collection)
+                          predicate
+                          acc)))))))
+
+(defmethod filter ((collection lazy-queue) predicate)
+  (filter-aux collection predicate (make-instance 'lazy-queue)))

@@ -90,3 +90,12 @@
     ((nil? collection) (lazy nil))
     (t (lazy (cons (funcall function (head collection))
                    (transform (tail collection) function))))))
+
+(defmethod filter ((collection thunk) predicate)
+  (cond
+    ((nil? collection) (lazy nil))
+    (t (lazy (let ((take? (funcall predicate (head collection)))
+                   (filtered (filter (tail collection) predicate)))
+               (cond
+                 (take? (cons (head collection) filtered))
+                 (t (force filtered))))))))
