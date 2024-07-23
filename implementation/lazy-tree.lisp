@@ -251,4 +251,23 @@
 (defmethod transform ((collection lazy-tree) function)
   (transform-aux collection function (<lazy-tree-empty>)))
 
+(defgeneric filter-aux (collection predicate acc)
+  (:documentation "Auxilliary function for filter method for lazy-tree"))
 
+(defmethod filter-aux ((collection lazy-tree-empty) predicate acc)
+  acc)
+
+(defmethod filter-aux ((collection lazy-tree) predicate acc)
+  (let ((take? (funcall predicate (@value collection)))
+        (filtered (filter-aux (@right collection) predicate acc)))
+    (filter-aux (@left collection)
+                predicate
+                (cond
+                  (take? (concat (@value collection) filtered))
+                  (t filtered)))))
+
+(defmethod filter ((collection lazy-tree-empty) predicate)
+  collection)
+
+(defmethod filter ((collection lazy-tree) predicate)
+  (filter-aux collection predicate (<lazy-tree-empty>)))
