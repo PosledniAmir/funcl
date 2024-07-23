@@ -241,3 +241,24 @@
 
 (defmethod transform ((collection rb-tree) function)
   (transform-aux collection function (<rb-tree-empty>)))
+
+(defgeneric filter-aux (collection predicate acc)
+  (:documentation "Auxilliary function for filter method for rb-tree"))
+
+(defmethod filter-aux ((collection rb-tree-empty) predicate acc)
+  acc)
+
+(defmethod filter-aux ((collection rb-tree) predicate acc)
+  (let ((take? (funcall predicate (@value collection)))
+        (filtered (filter-aux (@right collection) predicate acc)))
+    (filter-aux (@left collection)
+                predicate
+                (cond
+                  (take? (concat (@value collection) filtered))
+                  (t filtered)))))
+
+(defmethod filter ((collection rb-tree-empty) predicate)
+  collection)
+
+(defmethod filter ((collection rb-tree) predicate)
+  (filter-aux collection predicate (<rb-tree-empty>)))

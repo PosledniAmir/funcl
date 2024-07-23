@@ -65,3 +65,7 @@
 (test transform-method
   (let ((result (transform (rb-tree 5 3 4 1 2) (lambda (x) (+ x 1)))))
     (is (equal? (to-list result) (list 2 3 4 5 6)))))
+
+(test filter-method
+  (let ((result (filter (rb-tree 5 3 4 1 2) #'evenp)))
+    (is (equal? (to-list result) (list 2 4)))))

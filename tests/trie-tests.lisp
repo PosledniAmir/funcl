@@ -109,9 +109,9 @@
 
 (test transform-method
   (let ((result (transform (trie (list "five" 5)
-                               (list "three" 3)
-                               (list "four" 4)
-                               (list "one" 1)
+                                 (list "three" 3)
+                                 (list "four" 4)
+                                 (list "one" 1)
                                  (list "two" 2))
                            (lambda (x)
                              (list (first x)
