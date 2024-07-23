@@ -122,3 +122,15 @@
                                (list "three" 4)
                                (list "two" 3)
                                (list "one" 2)))))))
+
+(test filter-method
+  (let ((result (filter (trie (list "five" 5)
+                              (list "three" 3)
+                              (list "four" 4)
+                              (list "one" 1)
+                              (list "two" 2))
+                        (lambda (x)
+                          (evenp (second x))))))
+    (is (equal? (to-list result)
+                (reverse (list (list "four" 4)
+                               (list "two" 2)))))))

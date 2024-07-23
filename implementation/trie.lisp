@@ -228,3 +228,15 @@ if updated element meets remove predicate then it is removed from the list"
     (t (concat (funcall function (head collection))
                (transform (tail collection) function)))))
 
+(defmethod filter ((collection trie-empty) predicate)
+  collection)
+
+(defmethod filter ((collection trie) predicate)
+  (cond
+    ((nil? collection) (<trie-empty>))
+    (t (let ((take? (funcall predicate (head collection)))
+             (filtered (filter (tail collection) predicate)))
+         (cond
+           (take? (concat (head collection) filtered))
+           (t filtered))))))
+
